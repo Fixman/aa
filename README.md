@@ -1,2 +1,2 @@
 # aa
-TP de Aprendizaje Automatico de Fixman, Jalabera, y Matayoshi
+TP de Aprendizaje Automatico de Fixman, Gasperi, y Matayoshi
