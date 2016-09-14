@@ -1,4 +1,4 @@
-.PHONE: data samples trains
+.PHONY: data samples trains
 
 data: samples trains
 
