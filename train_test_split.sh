@@ -6,7 +6,7 @@ split=$(mktemp)
 cat $1 | sed -E 's/([^\\]"(,|\])|^\[)\s*/\1\
 /g'> $split
 
-lines=$(wc -l $split | sed -E 's/^.* ([0-9]+) .*/\1/')
+lines=$(wc -l $split | grep -E -o '[0-9]+' | head -n1)
 other_lines=$((lines - lines / 10))
 	test_lines=$((lines / 10))
 
