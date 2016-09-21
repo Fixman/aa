@@ -67,12 +67,11 @@ def main():
 
     first = True
     for e, chunk in enumerate(train):
-        # No queremos transformar la columna que dice si es ham o spam.
-        chunk.drop('spam', axis = 1, errors = 'ignore')
-
         try:
             # Ugly hack: if b : Bool, b * 1 : Int
-            (extractAll(chunk) * 1).to_csv(sys.stdout, index = True, header = first)
+            features = extractAll(chunk.drop('spam', axis = 1)) * 1
+            features['spam'] = chunk['spam']
+            features.to_csv(sys.stdout, index = True, header = first)
             first = False
         except Exception as t:
             print('Exception "{}" on chunk {}'.format(t, e), file = sys.stderr) 
