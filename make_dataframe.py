@@ -42,7 +42,7 @@ def try_parse(mail):
 def parse_file(f):
     raw = json.load(f)
     msg = map(try_parse, raw)
-    print('{}/{} unparseable messages in {}'.format(len([x for x in msg if 'unparseable' in x]), len(raw), f.name))
+    print('{}/{} unparseable messages in {}'.format(len([x for x in msg if 'unparseable' in x]), len(raw), f.name), file = sys.stderr)
 
     return pandas.DataFrame(map(dict, msg))
 
