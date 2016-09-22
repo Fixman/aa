@@ -28,8 +28,11 @@ def parse(mail):
     
     header = [(str(x).replace('_', '--'), y) for x, y in [z.split(':', 1) for z in header.split(ls)]]
     body = ('body', body)
+
+    result = header + [body] + [('my_linesep', ls)]
+    result = [(k, v.replace('\n', '<NL>').replace('\r', '<CR>')) for k, v in result]
     
-    return header + [body] + [('my_linesep', ls)]
+    return result
 
 def try_parse(mail):
     try:
@@ -55,12 +58,11 @@ def main():
     ham['spam'] = False
     spam['spam'] = True
 
-    pandas.concat([ham, spam], ignore_index = True).to_csv(
+    pandas.concat([ham, spam]).to_csv(
         sys.stdout,
-        index = True,
         header = True,
-        index_label = 'num',
-        encoding = 'utf-8'
+        encoding = 'utf-8',
+        index = False
     )
 
 if __name__ == '__main__':
