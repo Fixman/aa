@@ -57,24 +57,31 @@ def extractAll(table):
     return pandas.concat(map(lambda x: x.extractFrom(table), features), axis = 1)
 
 def main():
+    debug_file = 'data/train.csv'
     train = pandas.read_csv(
-        sys.stdin,
-        index_col = 'num',
+        debug_file,
+        # index_col = 'num',
         encoding = 'utf-8',
-        chunksize = 10000,
+        chunksize = 25000,
         dtype = object
     )
 
     first = True
+    feature_cols = None
     for e, chunk in enumerate(train):
-        try:
-            # Ugly hack: if b : Bool, b * 1 : Int
-            features = extractAll(chunk.drop('spam', axis = 1)) * 1
-            features['spam'] = chunk['spam']
-            features.to_csv(sys.stdout, index = True, header = first)
-            first = False
-        except Exception as t:
-            print('Exception "{}" on chunk {}'.format(t, e), file = sys.stderr) 
+        print('Parsing chunk {}'.format(e), file = sys.stderr)
+
+        features = extractAll(chunk.drop('spam', axis = 1))
+        features['spam'] = chunk['spam']
+
+        if first:
+            feature_cols = features.columns
+        else:
+            features = features.reindex(columns = feature_cols)
+
+        # Ugly hack: if b : Bool, b * 1 : Int
+        (features * 1).to_csv(sys.stdout, index = False, header = first)
+        first = False
 
 if __name__ == '__main__':
     main()
