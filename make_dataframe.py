@@ -62,7 +62,8 @@ def main():
         sys.stdout,
         header = True,
         encoding = 'utf-8',
-        index = False
+        index = True,
+        index_label = 'num'
     )
 
 if __name__ == '__main__':

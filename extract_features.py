@@ -68,7 +68,8 @@ def main():
         sys.stdin,
         encoding = 'utf-8',
         chunksize = 25000,
-        dtype = object
+        dtype = object,
+        index_col = 'num'
     )
 
     first = True
@@ -79,7 +80,7 @@ def main():
         features['spam'] = chunk['spam']
 
         # Ugly hack: if b : Bool, b * 1 : Int
-        (features * 1).to_csv(sys.stdout, index = False, header = first)
+        (features * 1).to_csv(sys.stdout, index = True, header = first)
         first = False
 
 if __name__ == '__main__':
