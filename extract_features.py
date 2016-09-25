@@ -16,68 +16,67 @@ class ExtractedFeature(object):
         que decide a qué columnas se le aplica.
     filna -- Con qué rellenar NaNs.
     """
-    def __init__(self, name, trans, filt = lambda x: True, fillna = numpy.nan):
+    def __init__(self, name, trans, fillna = numpy.nan, filt = None):
         self.name = name
         self.trans = trans
         self.fillna = fillna
 
-        if type(filt) == str:
-            self.filt = lambda x: x.name == filt
-        elif type(filt) == list:
-            self.filt = lambda x: x.name.name in filt
-        else:
-            self.filt = filt
-    
+        self.filt = pandas.Index([filt] if type(filt) == str else filt) if filt else None
+
     # Usa el extractor para extraer datos de un DataFrame.
     def extractFrom(self, table):
-        cols = table.columns.difference(table._get_numeric_data().columns)
-        cols = pandas.Index(x for x in cols if table[x].notnull().any() and self.filt(table[x].dropna()))
+        if self.filt is None:
+            cols = table.columns
+        else:
+            cols = table.columns & self.filt
         
         return (
             table[cols].apply(lambda x: self.trans(x.dropna()))
             .rename(columns = lambda x: x + '_' + self.name)
-            .fillna(self.fillna)
+            .fillna(self.fillna, downcast = 'infer')
         )
 
-def avg(x):
-    return sum(x) / len(x)
+def avglen(s):
+    return (s.str.strip().str.len() + 1).sum() / (s.size + 1)
+
+def avg1p(s):
+    return sum(1 + x for x in s) / (len(s) + 1)
 
 # Extrae muchos datos de una tabla.
 def extractAll(table):
     sep = ','
     features = [
-        ExtractedFeature('length', lambda x: x.str.len()),
-        ExtractedFeature('fields', lambda x: x.str.count(sep) + 1, lambda x: x.str.contains(sep).any()),
-        ExtractedFeature('avgFieldLength', lambda x: x.str.split(sep).apply(lambda x: avg(map(len, x))), lambda x: x.str.contains(sep).any()),
-        ExtractedFeature('words', lambda x: x.str.strip().str.count(' ') + 1, lambda x: x.str.strip().str.contains(' ').any()),
-        ExtractedFeature('avgWordLength', lambda x: x.str.strip().str.split(' ').apply(lambda x: avg(map(len, x))), lambda x: x.str.strip().str.contains(' ').any()),
-        ExtractedFeature('exists', lambda x: x.notnull(), fillna = False),
+        ExtractedFeature('length', lambda x: x.str.len(), 0),
+
+        ExtractedFeature('fields', lambda x: x.str.count(sep) + 1, 0),
+        ExtractedFeature('words', lambda x: x.str.strip().str.count(' ') + 1, 0),
+
+        ExtractedFeature('avgFieldLength', lambda x: x.str.split(sep).apply(lambda x: avg1p(map(lambda x: len(x.strip()), x))), 0),
+        ExtractedFeature('avgWordLength', lambda x: x.str.split(' |<NL>').apply(lambda x: avg1p(map(lambda x: len(x.strip()), x))), 0),
+
+        # ExtractedFeature('avgFieldLength', lambda x: x.str.split(sep, expand = True).apply(avglen, axis = 1), 0),
+        # ExtractedFeature('avgWordLength', lambda x: x.str.split(' ', expand = True).apply(avglen, axis = 1), 0),
+
+        ExtractedFeature('exists', lambda x: x.notnull(), False),
     ]
 
     return pandas.concat(map(lambda x: x.extractFrom(table), features), axis = 1)
 
 def main():
-    debug_file = 'data/train.csv'
+    debug_file = 'data/train_sample.csv'
     train = pandas.read_csv(
-        debug_file,
-        # index_col = 'num',
+        sys.stdin,
         encoding = 'utf-8',
         chunksize = 25000,
         dtype = object
     )
 
     first = True
-    feature_cols = None
     for e, chunk in enumerate(train):
         print('Parsing chunk {}'.format(e), file = sys.stderr)
 
         features = extractAll(chunk.drop('spam', axis = 1))
         features['spam'] = chunk['spam']
-
-        if first:
-            feature_cols = features.columns
-        else:
-            features = features.reindex(columns = feature_cols)
 
         # Ugly hack: if b : Bool, b * 1 : Int
         (features * 1).to_csv(sys.stdout, index = False, header = first)
