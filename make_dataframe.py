@@ -58,7 +58,7 @@ def main():
     ham['spam'] = False
     spam['spam'] = True
 
-    pandas.concat([ham, spam]).to_csv(
+    pandas.concat([ham, spam], ignore_index = True).to_csv(
         sys.stdout,
         header = True,
         encoding = 'utf-8',
