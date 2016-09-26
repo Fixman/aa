@@ -29,11 +29,11 @@
 
 \section{Selección de Modelos}
 
-En el punto anterior logramos conseguir una \textbf{Matriz de Features} \( X \), con \todox{} columnas (features) y \todox{} filas (samples), y un vector de clases \( y \) con \todox{} samples, donde cada una índica si cada sample debería pertenecer a \ham{} o a \spam{}. Dadas estos datos, vamos a elegir varios modelos que pueden lograr seleccionar el modelo óptimo para la inferencia.
+En el punto anterior logramos conseguir una \textbf{Matriz de Features} \( X \), con \todox{} columnas (features) y \todox{} filas (samples), y un vector de clases \( y \) con \todox{} samples, donde cada una indica si cada sample debería pertenecer a \ham{} o a \spam{}. Dadas estos datos, vamos a elegir varios modelos que pueden lograr seleccionar el modelo óptimo para la inferencia.
 
 \subsection{Metodología de Puntaje}
 
-A cada modelo presentado se le asigna un \textbf{puntaje}, que indica cuán bien este predijo la categoría de cada mails con features similares a \( X \). Para prevenir los casos de overfitting, se usa \textbf{Stratified K-Folds} validation como validación cruzada, eligiendo un valor de \( k = 10 \)\footnote{Este valor nos pareció un poco elevado para este caso, pero este es el más comunmente usado}. De esta manera, tomamos el puntaje final como el puntaje promedio de los folds.
+A cada modelo presentado se le asigna un \textbf{puntaje}, que indica cuán bien este predijo la categoría de cada mail con features similares a \( X \). Para prevenir los casos de overfitting, se usa \textbf{Stratified K-Folds} validation como validación cruzada, eligiendo un valor de \( k = 10 \)\footnote{Este valor nos pareció un poco elevado para este caso, pero este es el más comunmente usado}. De esta manera, tomamos el puntaje final como el puntaje promedio de los folds.
 
 Adicionalmente, todos los modelos que requieran algo de azar se ejecutan con la misma raíz (\texttt{random\_state es 0}); de esta manera se puede facilmente replicar los experimentos.
 
