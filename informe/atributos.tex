@@ -1,0 +1,28 @@
+\subsection{Análisis de texto}
+
+Para obtener atributos relacionados con análisis de texto decidimos trabajar específicamente con 2 campos: \(body\) y \(subject\).
+
+La extracción se realizó en base a aplicar Bayes sobre la probabilidad de que un mensaje sea \spam{} dada la aparición de una palabra (potencial atributo) en dicho mensaje.
+
+Sea $w \in W$, siendo $W$ el universo de palabras obtenido a partir de los mails utilizados para entrenar el modelo.
+
+\vspace{5px}
+$P(spam \vert w) = \frac{P(w \vert spam) \cdot P(spam)}{P(w)}$, donde:
+
+\vspace{5px}
+$P(w \vert spam) = \frac{\sum_{s \in spam}^{} w \in s}{\mid spam \mid}$, $P(w) = \frac{\sum_{m \in M}^{} w \in m}{\mid M \mid}$, $P(spam) = \frac{\mid spam \mid}{\mid M \mid}$
+
+\vspace{5px}
+Análogamente, se realiza la misma operación para analizar las palabras que aparecen en los mails de \ham{}.
+
+El primer experimento consistió en encontrar las 100 palabras que aparezcan en el body de los mails, y que maximicen el valor de Bayes tanto para \spam{} como
+para \ham{}. Dicho de otra forma, encontramos las 100 palabras más spammeras y las 100 palabras más hammeras que aparezcan en el \(body\) de los mails.
+
+Posteriormente realizamos un segundo experimento, repitiendo el proceso para las palabras del \(subject\) de los mails.
+
+Durante esta etapa utilizamos la clase \(CountVectorizer\) del módulo \(feature \ extraction\) de \(sklearn\). \(CountVectorizer\) admite como parámetro un token-pattern,
+que determina la estructura que deben seguir las palabras analizadas para ser consideradas potenciales features. En este caso, luego de probar con varios valores, optamos
+por elegir palabras que contengan solo caracteres entre [a-z], y de longitud mínima = 4. Al mismo tiempo, también admite un parámetro que determina
+la cantidad mínima de apariciones que debe tener una palabra para ser considerada \(token\). En este caso, luego de probar con varios valores, determinamos los valores de
+800 apariciones para el caso del \(body\) y 200 para el \(subject\). Es decir, solo las palabras que aparecen como mínimo esa cantidad de veces entre la totalidad de
+los mails fueron consideradas como tokens.
