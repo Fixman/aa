@@ -1,3 +1,18 @@
+\subsection{Header}
+
+Por cada elemento \(t\) del header de un mensaje (\(date\), \(from\), \(to\), \(cc\), \ldots) agregamos los siguientes atributos:
+
+\begin{enumerate}
+  \item{t\_exists}
+  \item{t\_length}
+  \item{t\_words}
+  \item{t\_fields}
+  \item{t\_avgWordLength}
+  \item{t\_avgFieldLength}
+\end{enumerate}
+
+Utilizamos el promedio positivo para calcular los average fields, para evitar una posible excepción \(zeroDivision\): $\frac{1}{1+n} \cdot \sum_{}^{}1+a_{i}$
+
 \subsection{Análisis de texto}
 
 Para obtener atributos relacionados con análisis de texto decidimos trabajar específicamente con 2 campos: \(body\) y \(subject\).
