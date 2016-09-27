@@ -6,7 +6,7 @@ import numpy
 import scipy
 import sklearn
 import sys
-import resource
+import pickle
 import time
 
 from sklearn.cross_validation import StratifiedKFold
@@ -16,9 +16,12 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.svm import SVC, LinearSVC
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler, FunctionTransformer
+from sklearn.decomposition import PCA, RandomizedPCA
+
+from argparse import ArgumentParser
 
 def get_features():
-    features = pandas.read_csv(sys.stdin)
+    features = pandas.read_csv(sys.stdin, index_col = 'num')
     X = features.drop('spam', axis = 1)
     y = features.spam
     return X.values, y.values
@@ -30,9 +33,7 @@ def profile(f, *args, **kwargs):
 
     return ret, time_1 - time_0
 
-def score_fold(c, X_train, X_test, y_train, y_test):
-    _, fit_time = profile(c.fit, X_train, y_train)
-
+def scores_predictor(c):
     if getattr(c, 'predict_proba', None):
         categ_proba, predict_time = profile(c.predict_proba, X_test)
         y_pred = categ_proba.argmax(axis = 1)
@@ -47,59 +48,48 @@ def score_fold(c, X_train, X_test, y_train, y_test):
     recall = sklearn.metrics.recall_score(y_test, y_pred)
     f1_score = sklearn.metrics.f1_score(y_test, y_pred)
 
-    return accuracy, auc, precision, recall, f1_score, fit_time, predict_time
-
-def score_classifier(c, X, y, folds):
-    scores = []
-    for train, test in folds:
-        scores.append(score_fold(c, X[train], X[test], y[train], y[test]))
-
-    accuracy, auc, precision, recall, f1_score, fit_time, predict_time = numpy.array(scores).mean(axis = 0)
     return pandas.DataFrame.from_items([
         ('accuracy', [accuracy]),
         ('auc', [auc]),
         ('precision', [precision]),
         ('recall', [recall]),
         ('f1_score', [f1_score]),
-        ('fit_time_s', [fit_time]),
         ('predict_time_s', [predict_time]),
     ])
 
+
+def parse_args():
+    parser = ArgumentParser(
+        description = 'Experiment with certain estimators.',
+    )
+    parser.add_argument('-p', '--pca', type = file, help = 'Pickle file with PCA object')
+    parser.add_argument('estimator_files', type = file, nargs = '*', help = 'Pickle files with already trained estimators')
+    args = parser.parse_args()
+
+    return args
+
+
 def main():
-    resource.setrlimit(resource.RLIMIT_AS, (6e9, 6e9))
+    args = parse_args()
+    estimators = map(pickle.load, args.estimator_files)
 
-    normalizers = [
-        ('id', FunctionTransformer()),
-        ('scale', StandardScaler()),
-        # ('logarithmic', Pipeline([('log1p', FunctionTransformer(numpy.log1p)), ('scale', StandardScaler())])),
-    ]
-    classifiers = [
-        DecisionTreeClassifier(max_features = 'sqrt', max_depth = 10, random_state = 0),
-        BernoulliNB(alpha = 1, fit_prior = True),
-        KNeighborsClassifier(5, weights = 'uniform'),
-        LinearSVC(C = 10, dual = False, random_state = 0),
-    ]
+    print('Tomando features', file = sys.stderr)
     X, y = get_features()
-    folds = StratifiedKFold(y, n_folds = 10, random_state = 1)
 
-    first = True
-    for norm_name, n in normalizers:
-        for c in classifiers:
-            data = pandas.DataFrame.from_items([
-                ('normalizacion', [norm_name],),
-                ('clasificador', [c.__class__.__name__])
-            ])
+    if args.pca:
+        print('Aplicando PCA', file = sys.stderr)
+        pca = pickle.load(args.pca)
+        X = pca.transform(X)
 
-            feature = pandas.concat(
-                [
-                    data,
-                    score_classifier(Pipeline([('norm', n), ('classify', c)]), X, y, folds),
-                ],
-                axis = 1
-            )
-
-            feature.to_csv(sys.stdout, index = False, header = first)
-            first = False
+    print('Calculando predicciones', file = sys.stderr)
+    for e, (n, c) in enumerate(zip(args.estimator_files, estimator_files)):
+        df = scores_predictor(c)
+        pandas.concat(
+            [
+                pandas.DataFrame({'estimator': [n]}),
+                df,
+            ], axis = 1
+        ).to_csv(sys.stdout, header = e == 0, index = False)
 
 if __name__ == '__main__':
     main()
