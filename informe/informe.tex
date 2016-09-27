@@ -103,10 +103,10 @@ Dado que hay una gran cantidad de posibles combinaciones para \( K \), y que no 
 	\textbf{Pesos} & \textbf{K} & \textbf{Avg.\ score} & \textbf{Std.\ score} \\
 	\midrule
 	uniform & 3 & 0.91765 & 0.00451 \\
-	distance & 3 & 0.92062 & 0.00408 \\
 	uniform & 5 & 0.90988 & 0.00276 \\
-	distance & 5 & 0.91778 & 0.00214 \\
 	uniform & 7 & 0.90815 & 0.00134 \\
+	distance & 3 & 0.92062 & 0.00408 \\
+	distance & 5 & 0.91778 & 0.00214 \\
 	distance & 7 & 0.91679 & 0.00048 \\
 	\bottomrule
 \end{tabular}
@@ -121,6 +121,23 @@ También se intentó hacer una normalización normal a los features, que centra 
 \]
 
 De esta manera se le puede dar aproximadamente el mismo peso a cada uno de los features en los métodos. Esto se puede ver en la diferencia con el método anterior.
+
+\begin{center}
+\begin{tabular}{c c c c}
+	\toprule
+	\textbf{Pesos} & \textbf{K} & \textbf{Avg.\ score} & \textbf{Std.\ score} \\
+	\midrule
+	uniform & 3 & 0.97531 & 0.00107 \\
+	uniform & 5 & 0.97296 & 0.00229 \\
+	uniform & 7 & 0.97420 & 0.00185 \\
+	distance & 3 & 0.97716 & 0.00123 \\
+	distance & 5 & 0.97765 & 0.00140 \\
+	distance & 7 & 0.97852 & 0.00229 \\
+	\bottomrule
+\end{tabular}
+\end{center}
+
+Los resultados son considerablemente mejores que la versión sin normalización, por lo que vale la pena normalizar los datos. Además, se puede ver que esta vez sí mejora la accuracy cuando aumenta la cantidad de vecinos; de cualquier manera el aumento es mínimo, y conviene seguir usando 3 vecinos (y medir los pesos por distancia) ya que el método es mucho más rapido.
 
 \subsection{Nearest Centroid}
 
@@ -202,6 +219,47 @@ Se hizo un \textbf{Grid Search} con tres diferentes kernels en SVM para elegir h
 \end{center}
 
 Se puede ver que el kernel cúbico, \(\mathbb{P}^3\) es el que da el mejor resultado, y que esto mejora cuando \( C = 100\). Sin embargo, el accuracy de este método sigue siendo peor al de SVM sin usar un kernel, además de ser bastante más lento.
+
+\subsection{Random Forest}
+
+Un método de ensamble bastante simple es \textbf{Random Forest}, que tiene una buena accuracy como un Decision Tree pero es mucho menos probable caer en overfitting. Hay 3 posibles hiperparámteros que pueden afectar la velocidad y la accuracy con la que se hace la inferencia: la \textbf{cantidad} de árboles con los que se hace la estimación, la \textbf{profundidad} de los árboles, y la \textbf{cantidad de features} con los que se arma cada árbol.
+
+Se puede ver trivialmente que cuanto más profundo sea cada árbol de un bosque y cuanta mayor cantidad de features haya mejor va a ser la predicción, aunque esta puede ser mucho más lenta y puede tener mayor probabilida de tener overfitting. Por eso, es necesario hacer un mejor análisis de los hiperparámetros.
+
+\begin{figure}
+	\centerline{\includegraphics[width=1.3\textwidth]{figures/forest.png}}
+	\caption{Accuracy de diferentes Random Forests, testeado con K-folds}
+\end{figure}
+
+Se puede ver que usar una cantidad cercana a \( \sqrt{\left|F\right|} \) (donde \(\left|F\right|\) es la cantidad de features) de los features es más conveniente, Por otro lado, y antiintuitivamente, la cantidad de árboles no mejora el puntaje, aunque hace mucho más lenta la predicción!
+
+Basado en estos datos, elegimos usar \( \sqrt{|F|} \) features, 10 árboles, y una profundidad máxima de 15 nodos.
+
+\subsection{Voting}
+
+Una manera simple de combinar varios estimadores en un ensemble es haciendo un ensemble y una votación entre ellos.
+
+\subsubsection{Absolutamente todo}
+
+La manera más obvia de usar este método es usar una votación entre los 5 métodos con mejor accuracy:
+
+\begin{itemize}
+	\item Un árbol de decisión con a lo sumo \( \sqrt{\left|F\right|} \) features, 15 nodos hoja y máxima profundidad de 7 nodos.
+	\item Naive Baytes, con \( \alpha = 1 \).
+	\item K Nearest Neighbors, con 7 vecinos medidos por distnacia.
+	\item Support Vector Machines, sin usar kernels, con \( C = 0.01 \), y midiendo por norma l2.
+	\item Random Forest, con \( \sqrt{\left|F\right|} \) features, 10 árboles, y a lo sumo 15 nodos hoja.
+\end{itemize}
+
+Midiendo el voto mayoritario usando K-folds, conseguimos un accuracy de \( 0.983 \).
+
+\subsubsection{Voto calificado}
+
+Otra posible técnica es hacer esto mismo, pero en vez de elegir el voto mayoritario, darle un puntaje a cada estimador dependiendo de cuan bien de la inferencia. Desafortunatemente, esto parece darle ventaja a los estimadores malos: el accuracy promedio de los folds es de \( 0.956 \).
+
+\subsubsection{Ensambles con menos estimadores}
+
+Se consiguió una buena estimación haciendo votación con una menor cantidad de estimadores. En particular, juntando \textbf{Random Forest}, \textbf{K nearest neighbors}, y \textbf{Support Vector Machines} sin jernels, se llegó a un accuracy de \( 0.986 \).
 
 \section{Reducción de Dimensionalidad}
 
