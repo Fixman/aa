@@ -15,8 +15,7 @@ def parse_args():
     parser.add_argument('-c', '--column_file', required = True, type = file, help = 'File with final column list.')
     args = parser.parse_args()
 
-    if args.column_file:
-        args.columns = pandas.Index(map(str.strip, args.column_file.readlines()))
+    args.columns = pandas.Index(map(str.strip, args.column_file.readlines()))
 
     return args
 
