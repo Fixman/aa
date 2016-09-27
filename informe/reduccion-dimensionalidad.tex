@@ -1,0 +1,24 @@
+\subsection{Experimentación inicial}
+
+Como primera aproximación para reducir la cantidad de atributos utilizamos los algoritmos \textbf{SelectKBest} y \textbf{SelectPercentile} de
+la sklearn.feature\_selection. La función de \( score \) elegida para ambos algoritmos fue \( chi2 \), y los features utilizados para la
+experimentación fueron los Word Bags, tanto del body como del subject de los mensajes.
+
+Luego de aplicar los algoritmos de reducción, utilizamos el modelo Bernoulli (Naive Bayes) como estimador para obtener el \( accuracy \) resultante
+de la transformación de los datos.
+
+\textbf{SelectKBest} toma un parámetro \( k \) que determina la cantidad de atributos a los cuales ajustarse.
+\textbf{SelectPercentile} toma un parámetro \( p \) que determina un porcentaje de atributos a los cuales ajustarse.
+
+A continuación se muestran los resultados obtenidos:
+
+\begin{figure}
+	\centerline{\includegraphics[scale=0.4]{figures/bernoulli_reduced_dimensionality.jpg}}
+	\caption{Accuracy en función de cantidad de features resultante}
+\end{figure}
+
+La observación inmediata es que ninguno de los 2 algoritmos logra incrementar el accuracy al reducir la cantidad de atributos. De hecho, el accuracy máximo
+se alcanza cuando el estimador utiliza la totalidad de los features. Es decir, no se produce reducción alguna.
+
+Una segunda observación es que ambos algoritmos tienen una performance muy similar, si bien KBest parece dar un mejor resultado con una cantidad
+de features menor.
