@@ -5,7 +5,7 @@ import pandas
 import sys
 
 from argparse import ArgumentParser
-from sklearn.frature_extraction.text import CountVectorizer
+from sklearn.feature_extraction.text import CountVectorizer
 
 def parse_args():
     parser = ArgumentParser(
@@ -27,13 +27,17 @@ def main():
 
     df = pandas.DataFrame(index = features.index)
 
-    for w in args.subject_words:
-        df['subject_contains_' + w] = features.subject.str.contains(w, case = False)
-        print('Subject: ' + w, file = sys.stderr)
+    for e, w in enumerate(args.subject_words):
+        if e & (e - 1) == 0:
+            print('Subject: ' + w, file = sys.stderr)
 
-    for w in args.body_words:
+        df['subject_contains_' + w] = features.subject.str.contains(w, case = False)
+
+    for e, w in enumerate(args.body_words):
+        if e & (e - 1) == 0:
+            print('Body: ' + w, file = sys.stderr)
+
         df['body_contains_' + w] = features.body.str.contains(w, case = False)
-        print('Body: ' + w, file = sys.stderr)
 
     df.to_csv(sys.stdout, index = True, header = True)
 
