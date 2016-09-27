@@ -7,6 +7,22 @@ import numpy
 import pandas
 import sys
 
+from argparse import ArgumentParser
+
+def parse_args():
+    parser = ArgumentParser(
+        description = 'Extract header features from CSV file with mail data',
+    )
+    parser.add_argument('-c', '--column_file', type = file, help = 'File with final column list.')
+    args = parser.parse_args()
+
+    if args.column_file:
+        args.columns = pandas.Index(map(str.strip, args.column_file.readlines()))
+    else:
+        args.columns = None
+
+    return args
+
 # Extrae cierto conjunto de features aplicado individualmente a ciertas columnas.
 class ExtractedFeature(object):
     """
@@ -54,15 +70,14 @@ def extractAll(table):
         ExtractedFeature('avgFieldLength', lambda x: x.str.split(sep).apply(lambda x: avg1p(map(lambda x: len(x.strip()), x))), 0),
         ExtractedFeature('avgWordLength', lambda x: x.str.split(' |<NL>').apply(lambda x: avg1p(map(lambda x: len(x.strip()), x))), 0),
 
-        # ExtractedFeature('avgFieldLength', lambda x: x.str.split(sep, expand = True).apply(avglen, axis = 1), 0),
-        # ExtractedFeature('avgWordLength', lambda x: x.str.split(' ', expand = True).apply(avglen, axis = 1), 0),
-
         ExtractedFeature('exists', lambda x: x.notnull(), False),
     ]
 
     return pandas.concat(map(lambda x: x.extractFrom(table), features), axis = 1)
 
 def main():
+    args = parse_args()
+
     debug_file = 'data/train_sample.csv'
     train = pandas.read_csv(
         sys.stdin,
@@ -80,7 +95,7 @@ def main():
         features['spam'] = chunk['spam']
 
         # Ugly hack: if b : Bool, b * 1 : Int
-        (features * 1).to_csv(sys.stdout, index = True, header = first)
+        (features.reindex(columns = args.columns, fill_value = 0) * 1).to_csv(sys.stdout, index = True, header = first)
         first = False
 
 if __name__ == '__main__':
