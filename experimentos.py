@@ -37,23 +37,30 @@ def score_fold(c, X_train, X_test, y_train, y_test):
         categ_proba, predict_time = profile(c.predict_proba, X_test)
         y_pred = categ_proba.argmax(axis = 1)
 
-        accuracy = (y_pred == y_test).mean()
         auc = sklearn.metrics.roc_auc_score(y_test, categ_proba[:, 1])
     else:
-        accuracy, predict_time = profile(c.score, X_test, y_test)
+        y_pred, predict_time = profile(c.predict, X_test)
         auc = numpy.nan
 
-    return accuracy, auc, fit_time, predict_time
+    accuracy = (y_pred == y_test).mean()
+    precision = sklearn.metrics.precision_score(y_test, y_pred)
+    recall = sklearn.metrics.recall_score(y_test, y_pred)
+    f1_score = sklearn.metrics.f1_score(y_test, y_pred)
+
+    return accuracy, auc, precision, recall, f1_score, fit_time, predict_time
 
 def score_classifier(c, X, y, folds):
     scores = []
     for train, test in folds:
         scores.append(score_fold(c, X[train], X[test], y[train], y[test]))
 
-    accuracy, auc, fit_time, predict_time = numpy.array(scores).mean(axis = 0)
+    accuracy, auc, precision, recall, f1_score, fit_time, predict_time = numpy.array(scores).mean(axis = 0)
     return pandas.DataFrame.from_items([
         ('accuracy', [accuracy]),
         ('auc', [auc]),
+        ('precision', [precision]),
+        ('recall', [recall]),
+        ('f1_score', [f1_score]),
         ('fit_time_s', [fit_time]),
         ('predict_time_s', [predict_time]),
     ])
@@ -67,8 +74,8 @@ def main():
         # ('logarithmic', Pipeline([('log1p', FunctionTransformer(numpy.log1p)), ('scale', StandardScaler())])),
     ]
     classifiers = [
-        BernoulliNB(alpha = 1, fit_prior = True),
         DecisionTreeClassifier(max_features = 'sqrt', max_depth = 10, random_state = 0),
+        BernoulliNB(alpha = 1, fit_prior = True),
         KNeighborsClassifier(5, weights = 'uniform'),
         LinearSVC(C = 10, dual = False, random_state = 0),
     ]
