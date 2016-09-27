@@ -1,4 +1,3 @@
-num
 CC_length
 Cc_length
 Content-Class_length
@@ -542,21 +541,11 @@ X-Accept-Language= en
 X-Accept-Language= en.1
 X-Accept-Language= en.2
 X-Accept-Language= en.3
-"X-Accept-Language= en
-es"
-"X-Accept-Language= en
-pdf"
-"X-Accept-Language= en
-zh-TW
-zh-CN
-zh
-ja
-ko
-tr
-ru"
+"X-Accept-Language= en,es"
+"X-Accept-Language= en,pdf"
+"X-Accept-Language= en,zh-TW,zh-CN,zh,ja,ko,tr,ru"
 X-Accept-Language= en-us
-"X-Accept-Language= en-us
- en"
+"X-Accept-Language= en-us, en"
 X-Accept-Language= es
 X-Accept-Language= ja
 X-Accept-Language= pt
@@ -651,8 +640,7 @@ my_reason=nosep
 x-accept-language= af
 x-accept-language= en
 x-accept-language= en-us
-"x-accept-language= en-us
- en"
+"x-accept-language= en-us, en"
 x-accept-language= es
 x-msmail-priority= high
 x-msmail-priority= low
