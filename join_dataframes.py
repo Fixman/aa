@@ -24,7 +24,7 @@ def main():
     for p in args.dataframes[1:]:
         k = k.merge(pandas.read_csv(p, index_col = 0), left_index = True, right_index = True)
 
-    k.reindex(columns = args.columns).to_csv(sys.stdout, index = True, header = True)
+    k.reindex(columns = args.columns, fill_value = 0).to_csv(sys.stdout, index = True, header = True)
 
 if __name__ == '__main__':
     main()
