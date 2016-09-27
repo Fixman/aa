@@ -7,6 +7,9 @@
 \usepackage{microtype}
 \usepackage{xcolor}
 \usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{xfrac}
 \usepackage{booktabs}
 \usepackage{hyperref}
 \usepackage{siunitx}
@@ -154,6 +157,51 @@ Los tres parámetros importantes de SVM lineal (cuando no se usa el truco de los
 \end{center}
 
 Se puede ver que los mejores puntajes se dieron cuando se minimiza \textbf{C}, y que la función cuadrática de pérdida (squared hinge) es un poco mejor que la cuadrada que se usa en los kernels lineales. Además, cuando se usa esta función, usar la norma \(l2\) suele dar un mejor resultado que con la norma \(l1\).
+
+\subsubsection{Kernel Trick}
+
+\textbf{Support Vector Machines} tiene la posibilidad de usar el \textbf{kernel trick}, que aplica funcionar a conjuntos de features para conseguir nuevos features y ``simular'' una función de separación que sea más compleja que un hiperplano.
+
+Como el algoritmo regular para entrenar SVM tarda un tiempo cuadrático en la cantidad de samples, es demasiado lento para hacer grid search con una cantidad significativa de folds para medir hiperparámetros. Por esa razón, usamos un sample de \(\sfrac{1}{10}\) de los mails a la hora de elegir los mejores hiperparámetros para los estimadores.
+
+Se hizo un \textbf{Grid Search} con tres diferentes kernels en SVM para elegir hiperparámetros.
+
+\begin{itemize}
+	\item \textbf{\(\mathbb{P}^2\)} Polinomio de grado 2.
+	\item \textbf{\(\mathbb{P}^3\)} Polinomio de grado 3.
+	\item \textbf{RBF} Kernel Gaussiano que intenta hacer un circulo.
+\end{itemize}
+
+\begin{center}
+\begin{tabular}{r r c c}
+	\toprule
+	\textbf{Kernel} & \textbf{C} & \textbf{Avg.\ score} & \textbf{Std.\ score} \\
+	\midrule
+	\(\mathbb{P}^2\) & 0.001 & 0.50222 & 0.00000 \\
+	\(\mathbb{P}^3\) & 0.001 & 0.50222 & 0.00000 \\
+	\(\mathbb{P}^2\) & 0.01 & 0.57975 & 0.01614 \\
+	\(\mathbb{P}^3\) & 0.01 & 0.55037 & 0.00939 \\
+	RBF & 0.01 & 0.87605 & 0.00817 \\
+	\(\mathbb{P}^2\) & 0.1 & 0.94000 & 0.00682 \\
+	\(\mathbb{P}^3\) & 0.1 & 0.88370 & 0.01782 \\
+	RBF & 0.1 & 0.92864 & 0.01347 \\
+	\(\mathbb{P}^2\) & 1 & 0.95679 & 0.00635 \\
+	\(\mathbb{P}^3\) & 1 & 0.94691 & 0.00609 \\
+	RBF & 1 & 0.97531 & 0.00344 \\
+	\(\mathbb{P}^2\) & 10 & 0.98420 & 0.00194 \\
+	\(\mathbb{P}^3\) & 10 & 0.96247 & 0.00286 \\
+	RBF & 10 & 0.98222 & 0.00060 \\
+	\(\mathbb{P}^2\) & 100 & 0.98370 & 0.00264 \\
+	\(\mathbb{P}^3\) & 100 & 0.98420 & 0.00140 \\
+	RBF & 100 & 0.98272 & 0.00252 \\
+	\(\mathbb{P}^2\) & 1000 & 0.98222 & 0.00277 \\
+	\(\mathbb{P}^3\) & 1000 & 0.98222 & 0.00277 \\
+	RBF & 1000 & 0.98222 & 0.00277 \\
+	\bottomrule
+\end{tabular}
+\end{center}
+
+Se puede ver que el kernel cúbico, \(\mathbb{P}^3\) es el que da el mejor resultado, y que esto mejora cuando \( C = 100\). Sin embargo, el accuracy de este método sigue siendo peor al de SVM sin usar un kernel, además de ser bastante más lento.
 
 \section{Reducción de Dimensionalidad}
 
