@@ -35,7 +35,7 @@ def main():
 
     for e, w in enumerate(args.body_words):
         if e & (e - 1) == 0:
-            print('{}: Body - '.format(e, w), file = sys.stderr)
+            print('{}: Body - {}'.format(e, w), file = sys.stderr)
 
         df['body_contains_' + w] = features.body.str.contains(w, case = False)
 
