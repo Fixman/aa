@@ -33,20 +33,20 @@ def profile(f, *args, **kwargs):
 
     return ret, time_1 - time_0
 
-def scores_predictor(c):
+def scores_predictor(c, X, y_real):
     if getattr(c, 'predict_proba', None):
-        categ_proba, predict_time = profile(c.predict_proba, X_test)
+        categ_proba, predict_time = profile(c.predict_proba, X)
         y_pred = categ_proba.argmax(axis = 1)
 
-        auc = sklearn.metrics.roc_auc_score(y_test, categ_proba[:, 1])
+        auc = sklearn.metrics.roc_auc_score(y_real, categ_proba[:, 1])
     else:
-        y_pred, predict_time = profile(c.predict, X_test)
+        y_pred, predict_time = profile(c.predict, X)
         auc = numpy.nan
 
-    accuracy = (y_pred == y_test).mean()
-    precision = sklearn.metrics.precision_score(y_test, y_pred)
-    recall = sklearn.metrics.recall_score(y_test, y_pred)
-    f1_score = sklearn.metrics.f1_score(y_test, y_pred)
+    accuracy = (y_pred == y_real).mean()
+    precision = sklearn.metrics.precision_score(y_real, y_pred)
+    recall = sklearn.metrics.recall_score(y_real, y_pred)
+    f1_score = sklearn.metrics.f1_score(y_real, y_pred)
 
     return pandas.DataFrame.from_items([
         ('accuracy', [accuracy]),
@@ -57,7 +57,6 @@ def scores_predictor(c):
         ('predict_time_s', [predict_time]),
     ])
 
-
 def parse_args():
     parser = ArgumentParser(
         description = 'Experiment with certain estimators.',
@@ -67,7 +66,6 @@ def parse_args():
     args = parser.parse_args()
 
     return args
-
 
 def main():
     args = parse_args()
@@ -82,11 +80,11 @@ def main():
         X = pca.transform(X)
 
     print('Calculando predicciones', file = sys.stderr)
-    for e, (n, c) in enumerate(zip(args.estimator_files, estimator_files)):
-        df = scores_predictor(c)
+    for e, (n, c) in enumerate(zip(args.estimator_files, estimators)):
+        df = scores_predictor(c, X, y)
         pandas.concat(
             [
-                pandas.DataFrame({'estimator': [n]}),
+                pandas.DataFrame({'estimator': [n.name]}),
                 df,
             ], axis = 1
         ).to_csv(sys.stdout, header = e == 0, index = False)
