@@ -13,8 +13,9 @@ def parse_args():
     parser.add_argument('--columns_file', type = file, required = True, help = 'List of columns, in order.')
     parser.add_argument('dataframes', nargs = '*', help = 'Dataframes to join')
 
+    args = parser.parse_args()
     args.columns = map(str.strip, args.columns_file.readlines())
-    return parser.parse_args()
+    return args
 
 def main():
     args = parse_args()
