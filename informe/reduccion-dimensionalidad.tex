@@ -23,3 +23,17 @@ se alcanza cuando el estimador utiliza la totalidad de los features. Es decir, n
 
 Una segunda observación es que ambos algoritmos tienen una performance muy similar, si bien KBest parece dar un mejor resultado con una cantidad
 de features menor.
+
+Además, probamos reducir la cantidad de features con PCA. Lo realizamos utilizando sklearn también. Las pruebas para determinar el número
+de componentes óptimo a tomar fueron realizadas también con el modelo de Bernoulli y las Word Bags para que la comparación con los otros métodos
+sea justa:
+
+\begin{figure}[H]
+	\includegraphics[scale=0.2]{figures/bernoulli_pca.jpg}
+	\caption{Accuracy en función de cantidad de features resultante}
+\end{figure}
+
+El resultado en este caso es distinto. Si bien vemos que una cantidad de features insignificante (15/1000) logra un accuracy alto, se alcanza
+un máximo rápidamente y luego la función comienza a decrecer con velocidad. Esto puede deberse a que el resto de las features aporten principalmente
+ruido al modelo. Además, estimamos que decrece de manera logarítmica porque al ver la tabla de varianza explicada por componente que provee sklearn
+se veía claramente que cada componente explicaba una potencia menos que la anterior aproximadamente.

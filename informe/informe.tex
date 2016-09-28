@@ -13,6 +13,7 @@
 \usepackage{booktabs}
 \usepackage{hyperref}
 \usepackage{siunitx}
+\usepackage{float}
 
 \newcommand{\todox}{\(\mathit{\color{red}x}\)}
 \newcommand{\ham}{\large{\texttt{ham}}}
@@ -226,10 +227,10 @@ Un método de ensamble bastante simple es \textbf{Random Forest}, que tiene una 
 
 Se puede ver trivialmente que cuanto más profundo sea cada árbol de un bosque y cuanta mayor cantidad de features haya mejor va a ser la predicción, aunque esta puede ser mucho más lenta y puede tener mayor probabilida de tener overfitting. Por eso, es necesario hacer un mejor análisis de los hiperparámetros.
 
-\begin{figure}
-	\centerline{\includegraphics[width=1.3\textwidth]{figures/forest.png}}
-	\caption{Accuracy de diferentes Random Forests, testeado con K-folds}
-\end{figure}
+%% \begin{figure}
+%% 	\centerline{\includegraphics[width=1.3\textwidth]{figures/forest.png}}
+%% 	\caption{Accuracy de diferentes Random Forests, testeado con K-folds}
+%% \end{figure}
 
 Se puede ver que usar una cantidad cercana a \( \sqrt{\left|F\right|} \) (donde \(\left|F\right|\) es la cantidad de features) de los features es más conveniente, Por otro lado, y antiintuitivamente, la cantidad de árboles no mejora el puntaje, aunque hace mucho más lenta la predicción!
 
