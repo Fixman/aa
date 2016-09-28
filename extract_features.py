@@ -91,8 +91,11 @@ def main():
     for e, chunk in enumerate(train):
         print('Parsing chunk {}'.format(e), file = sys.stderr)
 
-        features = extractAll(chunk.drop('spam', axis = 1))
-        features['spam'] = chunk['spam']
+        if 'spam' in chunk.columns:
+            features = extractAll(chunk.drop('spam', axis = 1))
+            features['spam'] = chunk['spam']
+        else:
+            features = extractAll(chunk)
 
         # Ugly hack: if b : Bool, b * 1 : Int
         (features.reindex(columns = args.columns, fill_value = 0) * 1).to_csv(sys.stdout, index = True, header = first)

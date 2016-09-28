@@ -20,43 +20,6 @@ from sklearn.decomposition import PCA, RandomizedPCA
 
 from argparse import ArgumentParser
 
-def get_features():
-    features = pandas.read_csv(sys.stdin, index_col = 'num')
-    X = features.drop('spam', axis = 1)
-    y = features.spam
-    return X.values, y.values
-
-def profile(f, *args, **kwargs):
-    time_0 = time.clock()
-    ret = f(*args, **kwargs)
-    time_1 = time.clock()
-
-    return ret, time_1 - time_0
-
-def scores_predictor(c, X, y_real):
-    if getattr(c, 'predict_proba', None):
-        categ_proba, predict_time = profile(c.predict_proba, X)
-        y_pred = categ_proba.argmax(axis = 1)
-
-        auc = sklearn.metrics.roc_auc_score(y_real, categ_proba[:, 1])
-    else:
-        y_pred, predict_time = profile(c.predict, X)
-        auc = numpy.nan
-
-    accuracy = (y_pred == y_real).mean()
-    precision = sklearn.metrics.precision_score(y_real, y_pred)
-    recall = sklearn.metrics.recall_score(y_real, y_pred)
-    f1_score = sklearn.metrics.f1_score(y_real, y_pred)
-
-    return pandas.DataFrame.from_items([
-        ('accuracy', [accuracy]),
-        ('auc', [auc]),
-        ('precision', [precision]),
-        ('recall', [recall]),
-        ('f1_score', [f1_score]),
-        ('predict_time_s', [predict_time]),
-    ])
-
 def parse_args():
     parser = ArgumentParser(
         description = 'Experiment with certain estimators.',
