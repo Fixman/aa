@@ -11,8 +11,9 @@ def parse_args():
         description = 'Parses ham and spam JSON files and prints them in DataFrame format.',
         epilog = 'This is done the lazy way to it uses a lot of memory.'
     )
+    parser.add_argument('--only', action = 'store_true', help = 'Parse only one file.')
     parser.add_argument('ham', type = file, help = 'JSON file with ham (ham_train.json).')
-    parser.add_argument('spam', type = file, help = 'JSON file with spam (spam_train.json).')
+    parser.add_argument('spam', type = file, nargs = '?', help = 'JSON file with spam (spam_train.json).')
     return parser.parse_args()
 
 def getlinesep(mail):
@@ -53,10 +54,11 @@ def main():
     args = parse_args()
 
     ham = parse_file(args.ham)
-    spam = parse_file(args.spam)
-
-    ham['spam'] = False
-    spam['spam'] = True
+    spam = None
+    if not args.only:
+        spam = parse_file(args.spam)
+        spam['spam'] = True
+        ham['spam'] = False
 
     pandas.concat([ham, spam], ignore_index = True).to_csv(
         sys.stdout,
