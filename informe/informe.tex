@@ -42,7 +42,7 @@ La entrada consiste de \num{45000} mensajes clasificados a priori como \ham{}, y
 
 \section{Selección de Modelos}
 
-En el punto anterior logramos conseguir una \textbf{Matriz de Features} \( X \), con \todox{} columnas (features) y \todox{} filas (samples), y un vector de clases \( y \) con \todox{} samples, donde cada una indica si cada sample debería pertenecer a \ham{} o a \spam{}. Dadas estos datos, vamos a elegir varios modelos que pueden lograr seleccionar el modelo óptimo para la inferencia.
+En el punto anterior logramos conseguir una \textbf{Matriz de Features} \( X \), con \num{1068} columnas (features) y \num{81000} filas (samples), y un vector de clases \( y \) con \textbf{81000} samples, donde cada una indica si cada sample debería pertenecer a \ham{} o a \spam{}. Dadas estos datos, vamos a elegir varios modelos que pueden lograr seleccionar el modelo óptimo para la inferencia.
 
 \subsection{Metodología de Puntaje}
 
@@ -60,7 +60,7 @@ Adicionalmente, todos los modelos que requieran algo de azar se ejecutan con la 
 
 La manera más simple de decidir a qué categorías pertenecen los mails con features similares a los de \( X \) es usar un árbol de decisión.
 
-Además de ser muy sensible al overfitting, la versión ``regular'' de este método que usa todos los features e intenta crear un árbol lo más grande posible es demasiado lenta para nuestro caso, por lo tanto elegimos limitar la cantidad máxima de features y la altura del árbol a la raíz cuadrada de la cantidad de features (\todox{}), y a la altura máxima de 10. Estos valores fueron elegidos entre otros ya que dan un buen resultado, mientras que también terminan en un tiempo razonable y terminan en árboles lo suficientemente chicos para que el overfitting no sea una gran preocupación.
+Además de ser muy sensible al overfitting, la versión ``regular'' de este método que usa todos los features e intenta crear un árbol lo más grande posible es demasiado lenta para nuestro caso, por lo tanto elegimos limitar la cantidad máxima de features y la altura del árbol a la raíz cuadrada de la cantidad de features (\(\lceil\sqrt{1068}\rceil = 33\)), y a la altura máxima de 10. Estos valores fueron elegidos entre otros ya que dan un buen resultado, mientras que también terminan en un tiempo razonable y terminan en árboles lo suficientemente chicos para que el overfitting no sea una gran preocupación.
 
 Luego de aplicar \textbf{Stratified 10-Folds}, llegamos a un score promedio de \( \mathbf{0.982} \).
 
@@ -271,8 +271,7 @@ Se miden los estimadores usando el test set del 10\% de los mails, que no se toc
 
 \renewcommand{\thefootnote}{\fnsymbol{footnote}}
 
-\begin{center}
-\begin{tabular}{r c c c c c c}
+\centerline{\begin{tabular}{r c c c c c c}
 	\toprule
 	\textbf{estimator} & \textbf{accuracy} & \textbf{auc} & \textbf{precision} & \textbf{recall} & \textbf{\(F_1\)-score} & \textbf{Predict time (s)} \\
 	\midrule
@@ -284,8 +283,7 @@ Se miden los estimadores usando el test set del 10\% de los mails, que no se toc
 	VotingFew & 0.976 & \footnotemark[1] & 0.984 & 0.968 & 0.976 & 125.5 \\
 	SoftVoting & 0.968 & \footnotemark[1] & 0.971 & 0.963 & 0.967 & 203.8 \\
 	\bottomrule
-\end{tabular}
-\end{center}
+\end{tabular}}
 
 Podemos ver que, entre los métodos simples, el de \textbf{Support Vector Machines} tiene el mejor resultado, y hasta hacer la predicción es mucho más rápido que con otros métodos. Por otro lado, el método \textbf{VotingFew}, que usaba una combinación de Random Forest, K nearest neighbrs, y Support Vector Machines tiene un mejor accuracy y mejor de todos los otros puntajes que se pueden calcular, aunque es mucho más lento que el anterior.
 
@@ -293,8 +291,7 @@ Podemos ver que, entre los métodos simples, el de \textbf{Support Vector Machin
 
 Se hace el mismo estudio con los componentes resultantas de PCA
 
-\begin{center}
-\begin{tabular}{r c c c c c c}
+\centerline{\begin{tabular}{r c c c c c c}
 	\toprule
 	\textbf{estimator} & \textbf{accuracy} & \textbf{auc} & \textbf{precision} & \textbf{recall} & \textbf{f1-score} & \textbf{predict-times} \\
 	\midrule
@@ -306,9 +303,8 @@ Se hace el mismo estudio con los componentes resultantas de PCA
 	VotingAll-PC.p & 0.496 & \footnotemark[1] & 0.293 & 0.004 & 0.009 & 7.082 \\
 	VotingFew-PC.p & 0.654 & \footnotemark[1] & 0.724 & 0.498 & 0.591 & 6.899 \\
 	SoftVoting-PC.p & 0.596 & 0.753 & 0.729 & 0.306 & 0.431 & 10.383 \\
-	\bottomrule
-\end{tabular}
-\end{center}
+	\textbf{estimator} & \textbf{accuracy} & \textbf{auc} & \textbf{precision} & \textbf{recall} & \textbf{\(F_1\)-score} & \textbf{Predict time (s)} \\
+\end{tabular}}
 
 Se puede ver que, a diferencia de lo que dice la teoría, este modelo dió considerablemente peor que el modelo sin la transformación. Aunque es posible que esto sea algo que pase en este dataset, no descartamos que haya habido un error en la transformación de los datos de prueba y del score.
 
