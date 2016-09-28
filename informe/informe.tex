@@ -13,7 +13,6 @@
 \usepackage{booktabs}
 \usepackage{hyperref}
 \usepackage{siunitx}
-\usepackage{float}
 
 \newcommand{\todox}{\(\mathit{\color{red}x}\)}
 \newcommand{\ham}{\large{\texttt{ham}}}
@@ -227,10 +226,10 @@ Un método de ensamble bastante simple es \textbf{Random Forest}, que tiene una 
 
 Se puede ver trivialmente que cuanto más profundo sea cada árbol de un bosque y cuanta mayor cantidad de features haya mejor va a ser la predicción, aunque esta puede ser mucho más lenta y puede tener mayor probabilida de tener overfitting. Por eso, es necesario hacer un mejor análisis de los hiperparámetros.
 
-%% \begin{figure}
-%% 	\centerline{\includegraphics[width=1.3\textwidth]{figures/forest.png}}
-%% 	\caption{Accuracy de diferentes Random Forests, testeado con K-folds}
-%% \end{figure}
+\begin{figure}
+	\centerline{\includegraphics[width=1.3\textwidth]{figures/forest.png}}
+	\caption{Accuracy de diferentes Random Forests, testeado con K-folds}
+\end{figure}
 
 Se puede ver que usar una cantidad cercana a \( \sqrt{\left|F\right|} \) (donde \(\left|F\right|\) es la cantidad de features) de los features es más conveniente, Por otro lado, y antiintuitivamente, la cantidad de árboles no mejora el puntaje, aunque hace mucho más lenta la predicción!
 
@@ -260,7 +259,7 @@ Otra posible técnica es hacer esto mismo, pero en vez de elegir el voto mayorit
 
 \subsubsection{Ensambles con menos estimadores}
 
-Se consiguió una buena estimación haciendo votación con una menor cantidad de estimadores. En particular, juntando \textbf{Random Forest}, \textbf{K nearest neighbors}, y \textbf{Support Vector Machines} sin jernels, se llegó a un accuracy de \( 0.986 \).
+Se consiguió una buena estimación haciendo votación con una menor cantidad de estimadores. En particular, juntando \textbf{Random Forest}, \textbf{K nearest neighbors}, y \textbf{Support Vector Machines} sin kernels, se llegó a un accuracy de \( 0.986 \).
 
 \section{Reducción de Dimensionalidad}
 
@@ -268,6 +267,52 @@ Se consiguió una buena estimación haciendo votación con una menor cantidad de
 
 \section{Resultados}
 
+Se miden los estimadores usando el test set del 10\% de los mails, que no se tocó hasta este momento.
+
+\renewcommand{\thefootnote}{\fnsymbol{footnote}}
+
+\begin{center}
+\begin{tabular}{r c c c c c c}
+	\toprule
+	\textbf{estimator} & \textbf{accuracy} & \textbf{auc} & \textbf{precision} & \textbf{recall} & \textbf{\(F_1\)-score} & \textbf{Predict time (s)} \\
+	\midrule
+	kNN & 0.967 & 0.984 & 0.965 & 0.97 & 0.967 & 117.0 \\
+	LinearSVC & 0.971 & \footnotemark[1] & 0.971 & 0.971 & 0.971 & 0.218 \\
+	NaiveBayes & 0.911 & 0.969 & 0.861 & 0.98 & 0.916 & 1.218 \\
+	RandomForest & 0.960 & 0.994 & 0.990 & 0.929 & 0.959 & 0.033 \\
+	VotingAll & 0.973 & \footnotemark[1]  & 0.991 & 0.955 & 0.973 & 125.6 \\
+	VotingFew & 0.976 & \footnotemark[1] & 0.984 & 0.968 & 0.976 & 125.5 \\
+	SoftVoting & 0.968 & \footnotemark[1] & 0.971 & 0.963 & 0.967 & 203.8 \\
+	\bottomrule
+\end{tabular}
+\end{center}
+
+Podemos ver que, entre los métodos simples, el de \textbf{Support Vector Machines} tiene el mejor resultado, y hasta hacer la predicción es mucho más rápido que con otros métodos. Por otro lado, el método \textbf{VotingFew}, que usaba una combinación de Random Forest, K nearest neighbrs, y Support Vector Machines tiene un mejor accuracy y mejor de todos los otros puntajes que se ke pueden calcular, aunque es mucho más lento que el anterior.
+
+\subsection{Usando Principal Component Analysis}
+
+Se hace el mismo estudio con los componentes resultantas de PCA
+
+\begin{center}
+\begin{tabular}{r c c c c c c}
+	\toprule
+	\textbf{estimator} & \textbf{accuracy} & \textbf{auc} & \textbf{precision} & \textbf{recall} & \textbf{f1_score} & \textbf{predict_time_s} \\
+	\midrule
+	DecisionTree_PC.p & 0.542 & 0.536 & 0.655 & 0.177 & 0.279 & 0.001 \\
+	knn_PC.p & 0.702 & 0.728 & 0.707 & 0.689 & 0.698 & 6.364 \\
+	linearSVC_PC.p & 0.671 & \footnotemark[1] & 0.709 & 0.580 & 0.638 & 0.075 \\
+	NaiveBayes_PC.p & 0.499 & 0.649 & 0.482 & 0.003 & 0.006 & 0.177 \\
+	randomforest_PC.p & 0.539 & 0.623 & 0.765 & 0.112 & 0.196 & 0.204 \\
+	VotingAll_PC.p & 0.496 & \footnotemark[1] & 0.293 & 0.004 & 0.009 & 7.082 \\
+	VotingFew_PC.p & 0.654 & \footnotemark[1] & 0.724 & 0.498 & 0.591 & 6.899 \\
+	SoftVoting_PC.p & 0.596 & 0.753 & 0.729 & 0.306 & 0.431 & 10.383 \\
+	\bottomrule
+\end{tabular}
+\end{center}
+
+Se puede ver que, a diferencia de lo que dice la teoría, este modelo dió considerablemente peor que el modelo sin la transformación. Aunque es posible que esto sea algo que pase en este dataset, no descartamos que haya habido un error en la transformación de los datos de prueba y del score.
+
+\footnotetext[1]{El modelo de SVC lineal usado para la predicción no permite conseguir la probabilidad de cada una de las predicciones, por lo que no se puede armar una curva ROC ni conseguir el área bajo esta.}
 \section{Discusión}
 
 \section{Bibliografía}
