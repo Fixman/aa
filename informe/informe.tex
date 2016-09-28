@@ -287,7 +287,7 @@ Se miden los estimadores usando el test set del 10\% de los mails, que no se toc
 \end{tabular}
 \end{center}
 
-Podemos ver que, entre los métodos simples, el de \textbf{Support Vector Machines} tiene el mejor resultado, y hasta hacer la predicción es mucho más rápido que con otros métodos. Por otro lado, el método \textbf{VotingFew}, que usaba una combinación de Random Forest, K nearest neighbrs, y Support Vector Machines tiene un mejor accuracy y mejor de todos los otros puntajes que se ke pueden calcular, aunque es mucho más lento que el anterior.
+Podemos ver que, entre los métodos simples, el de \textbf{Support Vector Machines} tiene el mejor resultado, y hasta hacer la predicción es mucho más rápido que con otros métodos. Por otro lado, el método \textbf{VotingFew}, que usaba una combinación de Random Forest, K nearest neighbrs, y Support Vector Machines tiene un mejor accuracy y mejor de todos los otros puntajes que se pueden calcular, aunque es mucho más lento que el anterior.
 
 \subsection{Usando Principal Component Analysis}
 
@@ -314,6 +314,14 @@ Se puede ver que, a diferencia de lo que dice la teoría, este modelo dió consi
 
 \footnotetext[1]{El modelo de SVC lineal usado para la predicción no permite conseguir la probabilidad de cada una de las predicciones, por lo que no se puede armar una curva ROC ni conseguir el área bajo esta.}
 \section{Discusión}
+
+Entre las principales conclusiones, destacamos:
+\begin{itemize}
+	\item La bibilioteca Sklearn de Python provee una documentación extensa y muy completa para atacar este tipo de problemas, lo que nos permitió experimentar con una gran variedad de algoritmos tanto de clasificación como de reducción de dimensionalidad
+	\item Resulta muy útil separar un conjunto de datos de tests, además de entrenamiento
+	\item Los componentes principales del training set son muy diferentes a los del testing set, posiblemente por la manera que se extraen los features
+	\item Otros algoritmos de reducción no siempre mejoran la performance de los modelos
+\end{itemize}
 
 \section{Bibliografía}
 
