@@ -30,11 +30,7 @@ class Board(object):
 
     # Poner una ficha de algun color en alguna ranura.
     def put(self, color, move):
-        try:
-            self.state[max(x for x in range(self.rows) if self.state[x][move] == Slot.empty)][move] = color
-        except ValueError:
-            import ipdb
-            ipdb.set_trace()
+        self.state[max(x for x in range(self.rows) if self.state[x][move] == Slot.empty)][move] = color
 
     # Devolver una copia de una columna.
     def col(self, c):
@@ -114,4 +110,8 @@ class ConnectFour(object):
             self.board.put(current.color, move)
 
             current, opponent = opponent, current
+
+        winner, lower = opponent, current
+        winner.reward(self.board, 1)
+        lower.reward(self.board, -1)
         return self.board.winner()

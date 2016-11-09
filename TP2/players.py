@@ -21,9 +21,14 @@ class QLearningPlayer(object):
         self.epsilon = epsilon
         self.alpha = alpha
         self.gamma = gamma
+        self.last_move = None
+        self.last_board = None
 
     # Elegir el mejor movimiento, y anotarlo como ultimo movimiento.
+    # Tambien guardar estado anterior del tablero.
     def move(self, board):
+        self.last_board = board
+
         move = self.best_move(board)
         self.last_move = move
         return move
@@ -42,7 +47,12 @@ class QLearningPlayer(object):
     # Anotar el reward de una jugada.
     # Aca deberia estar la ecuacion Q.
     def reward(self, board, value):
-        raise NotImplementedError
+        if not self.last_move:
+            return
+
+        maxq = max(self.Q[board, a] for a in self.last_board.available_moves())
+        currq = self.Q[self.last_board, self.last_move]
+        self.Q[self.last_board, self.last_move] = currq + self.alpha * ((value + self.gamma * maxq) - currq)
 
 # Jugador que hace jugadas al azar.
 class RandomPlayer(object):
