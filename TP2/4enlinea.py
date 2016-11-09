@@ -12,7 +12,7 @@ def parse_args():
 if __name__ == '__main__':
     args = parse_args()
 
-    a = RandomPlayer(ConnectFour.moves)
+    a = QLearningPlayer(ConnectFour.moves)
     b = RandomPlayer(ConnectFour.moves)
 
     c = Counter()

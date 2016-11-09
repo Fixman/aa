@@ -18,6 +18,9 @@ class Board(object):
     def __init__(self):
         self.state = [[Point.empty for x in range(self.cols)] for y in range(self.rows)]
 
+    def available_moves(self):
+        return [x for x in range(self.cols) if self.col(x)[0] == Point.empty]
+
     def put(self, color, move):
         self.state[max(x for x in range(self.rows) if self.state[x][move] == Point.empty)][move] = color
 
