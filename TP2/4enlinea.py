@@ -1,6 +1,7 @@
 from argparse import ArgumentParser
+from collections import Counter
 
-from connectfour import ConnectFour
+from connectfour import ConnectFour, WinnerState
 from players import QLearningPlayer, RandomPlayer
 
 def parse_args():
@@ -14,7 +15,10 @@ if __name__ == '__main__':
     a = RandomPlayer(ConnectFour.moves)
     b = RandomPlayer(ConnectFour.moves)
 
-    game = ConnectFour(a, b)
-    winner = game.play()
-    print(game.board.pretty_print())
-    print("Gano {}!".format(winner.name))
+    c = Counter()
+    for _ in range(args.games):
+        game = ConnectFour(a, b)
+        winner = game.play()
+        c.update([winner.name])
+
+    print(c)

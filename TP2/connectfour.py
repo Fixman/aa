@@ -44,7 +44,7 @@ class Board(object):
                 except IndexError:
                     break
             else:
-                return color
+                return WinnerState(color.value)
 
         return None
 
