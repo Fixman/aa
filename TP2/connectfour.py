@@ -75,7 +75,7 @@ class Board(object):
 
 
 class ConnectFour(object):
-    moves = 7
+    moves = range(7)
 
     def __init__(self, red, blue):
         self.board = Board()

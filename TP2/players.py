@@ -6,7 +6,7 @@ from connectfour import Point
 
 class QLearningPlayer(object):
     def __init__(self, moves, epsilon = .2, alpha = .3, gamma = .9):
-        self.q = defaultdict(lambda: random.randrange(moves))
+        self.q = defaultdict(lambda: random.choice(moves))
         self.epsilon = epsilon
         self.alpha = alpha
         self.gamma = gamma
@@ -25,7 +25,7 @@ class RandomPlayer(object):
         self.moves = moves
 
     def move(self, board):
-        vals = [x for x in range(self.moves) if board.col(x)[0] == Point.empty]
+        vals = [x for x in self.moves if board.col(x)[0] == Point.empty]
         return random.choice(vals)
 
     def reward(self, value, board):

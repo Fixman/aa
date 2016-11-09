@@ -21,4 +21,7 @@ if __name__ == '__main__':
         winner = game.play()
         c.update([winner.name])
 
+        if args.games == 1:
+            print(game.board.pretty_print())
+
     print(c)
