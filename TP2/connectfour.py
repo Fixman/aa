@@ -111,7 +111,12 @@ class ConnectFour(object):
 
             current, opponent = opponent, current
 
-        winner, lower = opponent, current
-        winner.reward(self.board, 1)
-        lower.reward(self.board, -1)
+        if self.board.winner() != WinnerState.tie:
+            winner, lower = opponent, current
+            winner.reward(self.board, 1)
+            lower.reward(self.board, -1)
+        else:
+            current.reward(self.board, .5)
+            opponent.reward(self.board, .5)
+
         return self.board.winner()

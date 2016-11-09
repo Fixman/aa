@@ -1,3 +1,4 @@
+import copy
 import random
 
 from collections import defaultdict
@@ -27,7 +28,7 @@ class QLearningPlayer(object):
     # Elegir el mejor movimiento, y anotarlo como ultimo movimiento.
     # Tambien guardar estado anterior del tablero.
     def move(self, board):
-        self.last_board = board
+        self.last_board = copy.deepcopy(board)
 
         move = self.best_move(board)
         self.last_move = move
@@ -50,6 +51,7 @@ class QLearningPlayer(object):
         if not self.last_move:
             return
 
+        # Estoy bastante seguro de que esta ecuacion esta mal. Revisar.
         maxq = max(self.Q[board, a] for a in self.last_board.available_moves())
         currq = self.Q[self.last_board, self.last_move]
         self.Q[self.last_board, self.last_move] = currq + self.alpha * ((value + self.gamma * maxq) - currq)
