@@ -2,7 +2,7 @@ import random
 
 from collections import defaultdict
 
-from connectfour import Point
+from connectfour import Slot
 
 def randargmax(a):
     return random.choice([i for i, x in enumerate(a) if x == max(a)])
@@ -36,7 +36,7 @@ class RandomPlayer(object):
         self.moves = moves
 
     def move(self, board):
-        vals = [x for x in self.moves if board.col(x)[0] == Point.empty]
+        vals = [x for x in self.moves if board.col(x)[0] == Slot.empty]
         return random.choice(vals)
 
     def reward(self, board, value):
