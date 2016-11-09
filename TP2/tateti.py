@@ -228,6 +228,8 @@ p1 = QLearningPlayer()
 p2 = QLearningPlayer()
 
 for i in xrange(0,200000):
+    if i & (i - 1) == 0:
+        print(i)
     t = TicTacToe(p1, p2)
     t.play_game()
 
