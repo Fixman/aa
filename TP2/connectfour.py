@@ -67,9 +67,9 @@ class Board(object):
     def pretty_print(self):
         colors = {
             # Point.empty: '\033[1;37mo',
-            Point.empty: '\033[1;37mo\033[m',
-            Point.red: '\033[0;31mo\033[m',
-            Point.blue: '\033[0;34mo\033[m'
+            Point.empty: '\033[2;39mo\033[m',
+            Point.red: '\033[1;31mo\033[m',
+            Point.blue: '\033[1;34mo\033[m'
         }
         return '\n'.join(' '.join(colors[p] for p in q) for q in self.state)
 
