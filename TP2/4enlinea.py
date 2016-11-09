@@ -20,6 +20,17 @@ class QLearningPlayer(object):
     def Q(self, board, action):
         raise NotImplementedError
 
+class RandomPlayer(object):
+    def __init__(self, moves):
+        self.moves = moves
+
+    def move(self, board):
+        vals = [x for x in range(self.moves) if board.col(x)[0] == board.Point.empty]
+        return random.choice(vals)
+
+    def reward(self, value, board):
+        pass
+
 class ConnectFour(object):
     moves = 7
 
@@ -30,19 +41,22 @@ class ConnectFour(object):
         class Point(Enum):
             empty = 0
             red = 1
-            white = 2
+            blue = 2
 
         class WinnerState(Enum):
             null = 0
             red = 1
-            white = 2
+            blue = 2
             tie = 3
 
         def __init__(self):
             self.state = [[self.Point.empty for x in range(self.cols)] for y in range(self.rows)]
 
         def put(self, color, move):
-            self.board[max(x for x in board if board[x] == Point.empty)] = color
+            self.state[max(x for x in range(self.rows) if self.state[x][move] == self.Point.empty)][move] = color
+
+        def col(self, c):
+            return [self.state[x][c] for x in range(self.rows)]
         
         def check_position(self, y, x):
             deltas = [
@@ -57,14 +71,16 @@ class ConnectFour(object):
 
             color = self.state[y][x]
             for dy, dx in deltas:
-                for m in range(3):
+                for m in range(4):
                     try:
                         if self.state[y + dy * m][x + dx * m] != color:
-                            return None
+                            break
                     except IndexError:
                         break
+                else:
+                    return color
 
-            return color
+            return None
 
         def winner(self):
             available = False
@@ -82,17 +98,26 @@ class ConnectFour(object):
 
             return self.WinnerState.null
 
-    def __init__(self, red, white):
+        def pretty_print(self):
+            colors = {
+                # self.Point.empty: '\033[1;37mo',
+                self.Point.empty: '\033[1;37mo\033[m',
+                self.Point.red: '\033[0;31mo\033[m',
+                self.Point.blue: '\033[0;34mo\033[m'
+            }
+            return '\n'.join(' '.join(colors[p] for p in q) for q in self.state)
+
+
+    def __init__(self, red, blue):
         self.board = self.Board()
         red.color = self.Board.Point.red
-        white.color = self.Board.Point.white
+        blue.color = self.Board.Point.blue
 
         self.red = red
-        self.white = white
+        self.blue = blue
 
     def play(self):
-        current, opponent = self.red, self.white
-        print(self.board.winner())
+        current, opponent = self.red, self.blue
         while self.board.winner() == self.Board.WinnerState.null:
             move = current.move(self.board)
             self.board.put(current.color, move)
@@ -106,10 +131,13 @@ def parse_args():
     return parser.parse_args()
 
 if __name__ == '__main__':
+    # print(" "+ "\033[01;41m" + " " +"\033[01;46m"  + "  " + "\033[01;42m")
     args = parse_args()
 
-    a = QLearningPlayer(ConnectFour.moves)
-    b = QLearningPlayer(ConnectFour.moves)
+    a = RandomPlayer(ConnectFour.moves)
+    b = RandomPlayer(ConnectFour.moves)
 
-    for _ in range(args.games):
-        ConnectFour(a, b).play()
+    game = ConnectFour(a, b)
+    winner = game.play()
+    print(game.board.pretty_print())
+    print("Gano {}!".format(winner.name))
