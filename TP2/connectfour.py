@@ -113,10 +113,11 @@ class ConnectFour(object):
             move = current.move(self.board)
             last = self.board.put(current.color, move)
 
-            current, opponent = opponent, current
             result = self.board.winner(last)
             if result != WinnerState.null:
                 break
+            current.reward(self.board, 0)
+            current, opponent = opponent, current
 
         if result != WinnerState.null:
             winner, lower = opponent, current

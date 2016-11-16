@@ -41,3 +41,4 @@ if __name__ == '__main__':
             print(game.board.pretty_print())
 
     print(c)
+    print('Red win ratio: {}'.format(c['red'] / args.games))

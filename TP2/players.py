@@ -41,7 +41,7 @@ class QLearningPlayer(object):
         if random.random() < self.epsilon:
             return random.choice(moves)
 
-        m = randargmax([self.Q[x] for x in moves])
+        m = randargmax([self.Q[board, x] for x in moves])
         return moves[m]
 
     # Anotar el reward de una jugada.
@@ -51,13 +51,17 @@ class QLearningPlayer(object):
             return
 
         # Estoy bastante seguro de que esta ecuacion esta mal. Revisar.
-        y = max(y for y in range(board.rows) if board.state[y][self.last_move] != Slot.empty)
-        last_board = copy.deepcopy(board)
+        y = min(y for y in range(board.rows) if board.state[y][self.last_move] != Slot.empty)
+
+        last_board = board
+        previous = last_board.state[y][self.last_move]
         last_board.state[y][self.last_move] = Slot.empty
 
-        maxq = max(self.Q[board, a] for a in last_board.available_moves())
+        maxq = max(self.Q[board, a] for a in board.available_moves())
         currq = self.Q[last_board, self.last_move]
         self.Q[last_board, self.last_move] = currq + self.alpha * ((value + self.gamma * maxq) - currq)
+
+        last_board.state[y][self.last_move] = previous
 
 # Jugador que hace jugadas al azar.
 class RandomPlayer(object):
