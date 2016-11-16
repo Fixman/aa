@@ -30,7 +30,9 @@ class Board(object):
 
     # Poner una ficha de algun color en alguna ranura.
     def put(self, color, move):
-        self.state[max(x for x in range(self.rows) if self.state[x][move] == Slot.empty)][move] = color
+        last = max(x for x in range(self.rows) if self.state[x][move] == Slot.empty)
+        self.state[last][move] = color
+        return last, move
 
     # Devolver una copia de una columna.
     def col(self, c):
@@ -63,19 +65,19 @@ class Board(object):
         return None
 
     # Devolver quien esta ganando.
-    def winner(self):
-        available = False
-        for i in range(self.rows):
-            for j in range(self.cols):
-                if self.state[i][j] == Slot.empty:
-                    available = True
-                else:
+    def winner(self, last):
+        if last == None:
+            return WinnerState.null
+
+        y, x = last
+        for i in range(y - 3, y + 4):
+            for j in range(x - 3, x + 4):
+                try:
                     p = self.check_position(i, j)
                     if p:
                         return p
-
-        if not available:
-            return WinnerState.tie
+                except IndexError:
+                    continue
 
         return WinnerState.null
 
@@ -105,13 +107,18 @@ class ConnectFour(object):
     # Jugar al 4 en linea hasta que alguien gane o haya un empate.
     def play(self):
         current, opponent = self.red, self.blue
-        while self.board.winner() == WinnerState.null:
+        last = None
+        result = WinnerState.null
+        for nmove in range(self.board.cols * self.board.rows):
             move = current.move(self.board)
-            self.board.put(current.color, move)
+            last = self.board.put(current.color, move)
 
             current, opponent = opponent, current
+            result = self.board.winner(last)
+            if result != WinnerState.null:
+                break
 
-        if self.board.winner() != WinnerState.tie:
+        if result != WinnerState.null:
             winner, lower = opponent, current
             winner.reward(self.board, 1)
             lower.reward(self.board, -1)
@@ -119,4 +126,4 @@ class ConnectFour(object):
             current.reward(self.board, .5)
             opponent.reward(self.board, .5)
 
-        return self.board.winner()
+        return result
