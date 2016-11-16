@@ -29,8 +29,6 @@ class QLearningPlayer(object):
     # Elegir el mejor movimiento, y anotarlo como ultimo movimiento.
     # Tambien guardar estado anterior del tablero.
     def move(self, board):
-        self.last_board = copy.deepcopy(board)
-
         move = self.best_move(board)
         self.last_move = move
         return move
@@ -53,9 +51,13 @@ class QLearningPlayer(object):
             return
 
         # Estoy bastante seguro de que esta ecuacion esta mal. Revisar.
-        maxq = max(self.Q[board, a] for a in self.last_board.available_moves())
-        currq = self.Q[self.last_board, self.last_move]
-        self.Q[self.last_board, self.last_move] = currq + self.alpha * ((value + self.gamma * maxq) - currq)
+        y = max(y for y in range(board.rows) if board.state[y][self.last_move] != Slot.empty)
+        last_board = copy.deepcopy(board)
+        last_board.state[y][self.last_move] = Slot.empty
+
+        maxq = max(self.Q[board, a] for a in last_board.available_moves())
+        currq = self.Q[last_board, self.last_move]
+        self.Q[last_board, self.last_move] = currq + self.alpha * ((value + self.gamma * maxq) - currq)
 
 # Jugador que hace jugadas al azar.
 class RandomPlayer(object):
