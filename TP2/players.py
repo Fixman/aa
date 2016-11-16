@@ -8,7 +8,8 @@ from connectfour import Slot
 # Elegir el argmax de una lista.
 # Si hay varios valores iguales, elegir uno al azar.
 def randargmax(a):
-    return random.choice([i for i, x in enumerate(a) if x == max(a)])
+    mx = max(a)
+    return random.choice([i for i, x in enumerate(a) if x == mx])
 
 # Jugador que hace Q Learning.
 class QLearningPlayer(object):
