@@ -53,33 +53,33 @@ class Board(object):
 
         color = self.state[y][x]
         for dy, dx in deltas:
-            for m in range(4):
+            p = 1
+            for m in range(1, 4):
                 try:
                     if self.state[y + dy * m][x + dx * m] != color:
                         break
                 except IndexError:
                     break
-            else:
+                p += 1
+            for m in range(-1, -4, -1):
+                try:
+                    if self.state[y + dy * m][x + dx * m] != color:
+                        break
+                except IndexError:
+                    break
+                p += 1
+
+            if p >= 4:
                 return WinnerState(color.value)
 
-        return None
+        return WinnerState.null
 
     # Devolver quien esta ganando.
     def winner(self, last):
         if last == None:
             return WinnerState.null
 
-        y, x = last
-        for i in range(y - 3, y + 4):
-            for j in range(x - 3, x + 4):
-                try:
-                    p = self.check_position(i, j)
-                    if p:
-                        return p
-                except IndexError:
-                    continue
-
-        return WinnerState.null
+        return self.check_position(*last)
 
     # Imprimir el tablero de una manera linea y colorida.
     def pretty_print(self):
@@ -125,5 +125,6 @@ class ConnectFour(object):
         else:
             current.reward(self.board, .5)
             opponent.reward(self.board, .5)
+            return WinnerState.tie
 
         return result
