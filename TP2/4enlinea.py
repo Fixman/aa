@@ -10,7 +10,6 @@ players = {
 }
 
 def parse_args():
-
     parser = ArgumentParser(description = 'Juega al 4 en linea entre dos jugadores con Q-learning.')
     parser.add_argument('--games', type = int, default = 1000, help = 'Cantidad de juegos.')
     parser.add_argument('--players', type = str, nargs = 2, choices = players.keys(), default = ['qlearn', 'random'], help = 'Tipo de los jugadores.')
