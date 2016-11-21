@@ -53,7 +53,6 @@ class Board(object):
     def is_full(self):
         return False
 
-    # Devolver si hay un cuatro-en-linea de algun jugador
     # empezando en el punto (y, x)
     def check_position(self, y, x):
         deltas = [
@@ -70,17 +69,15 @@ class Board(object):
         for dy, dx in deltas:
             p = 1
             for m in range(1, 4):
-                try:
-                    if self.state[y + dy * m][x + dx * m] != color:
-                        break
-                except IndexError:
+                if  y + dy * m > 5 or y + dy * m < 0 or x + dx * m < 0 or x + dx * m > 6:
+                    break
+                if self.state[y + dy * m][x + dx * m] != color:
                     break
                 p += 1
             for m in range(-1, -4, -1):
-                try:
-                    if self.state[y + dy * m][x + dx * m] != color:
-                        break
-                except IndexError:
+                if  y + dy * m > 5 or y + dy * m < 0 or x + dx * m < 0 or x + dx * m > 6:
+                    break
+                if self.state[y + dy * m][x + dx * m] != color:
                     break
                 p += 1
 
