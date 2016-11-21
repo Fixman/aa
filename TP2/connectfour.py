@@ -37,7 +37,7 @@ class Board(object):
     # Devolver una copia de una columna.
     def col(self, c):
         return [self.state[x][c] for x in range(self.rows)]
-    
+
     # Devolver si hay un cuatro-en-linea de algun jugador
     # empezando en el punto (y, x)
     def check_position(self, y, x):
@@ -55,17 +55,15 @@ class Board(object):
         for dy, dx in deltas:
             p = 1
             for m in range(1, 4):
-                try:
-                    if self.state[y + dy * m][x + dx * m] != color:
-                        break
-                except IndexError:
+                if  y + dy * m > 5 or y + dy * m < 0 or x + dx * m < 0 or x + dx * m > 6:
+                    break
+                if self.state[y + dy * m][x + dx * m] != color:
                     break
                 p += 1
             for m in range(-1, -4, -1):
-                try:
-                    if self.state[y + dy * m][x + dx * m] != color:
-                        break
-                except IndexError:
+                if  y + dy * m > 5 or y + dy * m < 0 or x + dx * m < 0 or x + dx * m > 6:
+                    break
+                if self.state[y + dy * m][x + dx * m] != color:
                     break
                 p += 1
 
