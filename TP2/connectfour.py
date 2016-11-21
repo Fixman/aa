@@ -23,6 +23,7 @@ class Board(object):
     # El estado inicial es con todos los slots vacios.
     def __init__(self):
         self.state = [[Slot.empty for x in range(self.cols)] for y in range(self.rows)]
+        self.last_move = None
 
     # Dar una lista de movimienos validos, que tengan lugar para poner una ficha.
     def available_moves(self):
@@ -32,6 +33,8 @@ class Board(object):
     def put(self, color, move):
         last = max(x for x in range(self.rows) if self.state[x][move] == Slot.empty)
         self.state[last][move] = color
+        # Guardo el último movimiento, utilizado por el minimax
+        self.last_move = (last, move)
         return last, move
 
     def undo(self, x, y):
@@ -40,6 +43,15 @@ class Board(object):
     # Devolver una copia de una columna.
     def col(self, c):
         return [self.state[x][c] for x in range(self.rows)]
+
+    def player_wins(self, color):
+        if self.last_move:
+            y, x = self.last_move
+            return self.check_position(y,x) == WinnerState(color.value)
+        return False
+
+    def is_full(self):
+        return False
 
     # Devolver si hay un cuatro-en-linea de algun jugador
     # empezando en el punto (y, x)

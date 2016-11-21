@@ -91,34 +91,49 @@ class MinimaxPlayer(object):
         window = 5
         choices = []
         best_yet = -2
+        # if tuple(board) in self.best_moves:
+            # return random.choice(self.best_moves[tuple(board)])
         for move in board.available_moves():
             row, column = board.put(self.color, move)
-            self.minimax(1,1,1,1)
+            optimal = self.minimax(board, self.color, -2, 2, window)
             board.undo(row, column)
-
-        # if tuple(board) in self.best_moves:
-        #     return random.choice(self.best_moves[tuple(board)])
-        # if len(self.available_moves(board)) == 9:
-        #     return random.choice([1,3,7,9])
-        # best_yet = -2
-        # choices = []
-        # for move in self.available_moves(board):
-        #     board[move-1] = self.me
-        #     optimal = self.minimax(board, self.enemy, -2, 2)
-        #     board[move-1] = ' '
-        #     if optimal > best_yet:
-        #         choices = [move]
-        #         best_yet = optimal
-        #     elif optimal == best_yet:
-        #         choices.append(move)
+            if optimal > best_yet:
+                choices = [move]
+                best_yet = optimal
+            elif optimal == best_yet:
+                choices.append(move)
         # self.best_moves[tuple(board)] = choices
-        # return random.choice(choices)
+        # print(best_moves)
+        return random.choice(choices)
 
-        # self.minimax(1,1,1,1)
-        return random.choice(board.available_moves())
-
-    def minimax(self, board, char, alpha, beta):
-        pass
+    def minimax(self, board, color, alpha, beta, window):
+        if board.player_wins(self.color):
+            return 1
+        if board.player_wins(self.enemy):
+            return -1
+        if board.is_full():
+            return 0
+        if window == 0:
+            return 0
+        window -= 1
+        for move in board.available_moves():
+            row, column = board.put(self.color, move)
+            val = self.minimax(board, self.other(self.color), alpha, beta, window)
+            board.undo(row, column)
+            if color == self.color:
+                if val > alpha:
+                    alpha = val
+                if alpha >= beta:
+                    return beta
+            else:
+                if val < beta:
+                    beta = val
+                if beta <= alpha:
+                    return alpha
+        if color == self.color:
+            return alpha
+        else:
+            return beta
 
     # No nos importa el reward.
     def reward(self, board, value):
