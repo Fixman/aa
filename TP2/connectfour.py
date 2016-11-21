@@ -34,10 +34,13 @@ class Board(object):
         self.state[last][move] = color
         return last, move
 
+    def undo(self, x, y):
+        self.state[x][y] = Slot.empty
+
     # Devolver una copia de una columna.
     def col(self, c):
         return [self.state[x][c] for x in range(self.rows)]
-    
+
     # Devolver si hay un cuatro-en-linea de algun jugador
     # empezando en el punto (y, x)
     def check_position(self, y, x):
@@ -99,6 +102,7 @@ class ConnectFour(object):
     def __init__(self, red, blue):
         self.board = Board()
         red.color = Slot.red
+        red.enemy = Slot.blue
         blue.color = Slot.blue
 
         self.red = red

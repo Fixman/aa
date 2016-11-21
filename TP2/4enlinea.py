@@ -2,11 +2,12 @@ from argparse import ArgumentParser
 from collections import Counter
 
 from connectfour import ConnectFour, WinnerState
-from players import QLearningPlayer, RandomPlayer
+from players import QLearningPlayer, RandomPlayer, MinimaxPlayer
 
 players = {
     'random': RandomPlayer,
     'qlearn': QLearningPlayer,
+    'minimax' : MinimaxPlayer
 }
 
 def parse_args():
@@ -28,8 +29,8 @@ if __name__ == '__main__':
     # Acumular quien gana cada juego.
     c = Counter()
     for num in range(args.games):
-        if num & (num - 1) == 0:
-            print('Juego #{}'.format(num))
+        # if num & (num - 1) == 0:
+            # print('Juego #{}'.format(num))
 
         game = ConnectFour(a, b)
         winner = game.play()
@@ -39,5 +40,5 @@ if __name__ == '__main__':
         if args.games == 1:
             print(game.board.pretty_print())
 
-    print(c)
-    print('Red win ratio: {}'.format(c['red'] / args.games))
+    # print(c)
+    # print('Red win ratio: {}'.format(c['red'] / args.games))
