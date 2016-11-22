@@ -50,7 +50,6 @@ class QLearningPlayer(object):
         if not self.last_move:
             return
 
-        # Estoy bastante seguro de que esta ecuacion esta mal. Revisar.
         y = min(y for y in range(board.rows) if board.state[y][self.last_move] != Slot.empty)
 
         last_board = board
