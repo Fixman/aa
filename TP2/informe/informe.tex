@@ -1,0 +1,74 @@
+\documentclass{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage{graphicx}
+\usepackage{microtype}
+\usepackage{xcolor}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{xfrac}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage{siunitx}
+
+\newcommand{\todox}{\(\mathit{\color{red}x}\)}
+\newcommand{\ham}{\large{\texttt{ham}}}
+\newcommand{\spam}{\large{\texttt{spam}}}
+\newcommand{\fo}{\(\mathbf{F_1}\)}
+
+\interfootnotelinepenalty=10000
+
+\title{Aprendizaje Automático \\ Trabajo Práctico 2 --- 4 en ----}
+\author{Martín Fixman \and Leandro Matayoshi \and Fernando Gasperi}
+\date{Segundo Cuatrimestre de 2016}
+
+\begin{document}
+\maketitle
+
+\newpage
+
+\section{Introducción}
+
+Este trabajo se propone explorar la técnica de Q Learning que permite aprender una tarea
+sin necesidad de conocer ni $\delta$ (la función de transición) ni $r$ (la función de recompensa).
+Analizaremos el caso concreto del juego 4 en línea para comprender cómo aprende y cómo afectan
+al aprendizaje las diferentes variables que podemos controlar.
+
+\section{Jugadores}
+
+Modelamos el tablero y el 4 en línea de forma tal que fuera fácil simular juegos con distintos tipos de jugadores para
+realizar las pruebas. Programamos 3 jugadores:
+\begin{itemize}
+  \item Q Learning
+  \item Random
+  \item Minimax
+\end{itemize}
+El jugador Minimax tiene un horizonte de 5 jugadas. Si no alcanza una posición final mirando 5 jugadas
+hacia adelante devuelve medio punto para el jugador que más cerca esté de alcanzar 4 en línea verticalmente.
+No se nos ocurrió una forma rápida de evaluar las posiciones del juego sin recorrer todo el tablero y calcular
+por fuerza bruta quién se encuentra a menos movimientos de conseguir 4 en línea. Considerar sólo las oportunidades
+verticales nos pareció una alternativa razonable entre el cálculo completo y la ausencia de evaluación.
+El jugador Q Learning tiene varios parámetros que permiten ajustarlo:
+\begin{itemize}
+  \item $\epsilon$ es la probabilidad con la cual elige una acción al azar. En
+    cada turno elige con probabilidad $\epsilon$ tomar una acción al azar entre
+    las disponibles o tomar alguna de las que maximiza Q para el estado actual.
+  \item $\alpha$ es la tasa de aprendizaje, el peso que le damos a lo aprendido
+    con la nueva acción.
+  \item $\gamma$ es la constante que determina el valor relativo de las
+    recompensas futuras.
+  \item el valor inicial de los elementos $Q_{i, j}$.
+\end{itemize}
+Las experimentaciones que realizaremos preteden analizar cómo impactan éstos
+parámetros en el aprendizaje del jugador. Además nos interesa ver el efecto de
+cuestiones como si sólo juega con un color (lo cual decide quién comienza las
+partidas) 
+
+\section{Experimentación}
+
+\section{Conclusiones}
+
+\end{document}
