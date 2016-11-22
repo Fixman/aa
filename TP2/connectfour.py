@@ -33,8 +33,9 @@ class Board(object):
     def put(self, color, move):
         last = max(x for x in range(self.rows) if self.state[x][move] == Slot.empty)
         self.state[last][move] = color
-        # last_move es utilizado por minimax
+        # last_move es utilizado por minimax, last_color es debugging
         self.last_move = (last, move)
+        self.last_color = color
         return last, move
 
     def undo(self, x, y):
@@ -51,7 +52,7 @@ class Board(object):
         return False
 
     def is_full(self):
-        return [self.state[0][c] != Slot.empty for c in range(self.cols)]
+        return all([self.state[0][c] != Slot.empty for c in range(self.cols)])
 
     # empezando en el punto (y, x)
     def check_position(self, y, x):

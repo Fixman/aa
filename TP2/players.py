@@ -87,7 +87,7 @@ class MinimaxPlayer(object):
             return Slot.red
 
     def move(self, board):
-        window = 5
+        window = 3
         choices = []
         best_yet = -2
         flattened = [ item for x in board.state for item in x ]
@@ -95,7 +95,7 @@ class MinimaxPlayer(object):
             return random.choice(self.best_moves[tuple(flattened)])
         for move in board.available_moves():
             row, column = board.put(self.color, move)
-            optimal = self.minimax(board, self.color, -2, 2, window)
+            optimal = self.minimax(board, self.other(self.color), -2, 2, window)
             board.undo(row, column)
             if optimal > best_yet:
                 choices = [move]
@@ -116,8 +116,8 @@ class MinimaxPlayer(object):
             return 0
         window -= 1
         for move in board.available_moves():
-            row, column = board.put(self.color, move)
-            val = self.minimax(board, self.other(self.color), alpha, beta, window)
+            row, column = board.put(color, move)
+            val = self.minimax(board, self.other(color), alpha, beta, window)
             board.undo(row, column)
             if color == self.color:
                 if val > alpha:
