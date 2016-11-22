@@ -28,11 +28,11 @@ if __name__ == '__main__':
 
     # Acumular quien gana cada juego.
     c = Counter()
+    game = ConnectFour(a, b)
     for num in range(args.games):
         if num & (num - 1) == 0:
             print('Juego #{}'.format(num))
 
-        game = ConnectFour(a, b)
         winner = game.play()
         c.update([winner.name])
 

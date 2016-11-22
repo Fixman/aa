@@ -109,8 +109,8 @@ class ConnectFour(object):
     moves = range(7)
 
     # Inicializar el juego con los dos jugadores.
-    def __init__(self, red, blue):
-        self.board = Board()
+    def __init__(self, red, blue, rotate_start = False):
+        # self.board = Board()
         red.color = Slot.red
         blue.color = Slot.blue
         red.enemy = Slot.blue
@@ -119,9 +119,15 @@ class ConnectFour(object):
         self.red = red
         self.blue = blue
 
+        self.current = red
+        self.opponent = blue
+
+        self.rotate_start = rotate_start
+
     # Jugar al 4 en linea hasta que alguien gane o haya un empate.
     def play(self):
-        current, opponent = self.red, self.blue
+        self.board = Board()
+        current, opponent = self.current, self.opponent
         last = None
         result = WinnerState.null
         for nmove in range(self.board.cols * self.board.rows):
@@ -142,5 +148,11 @@ class ConnectFour(object):
             current.reward(self.board, .5)
             opponent.reward(self.board, .5)
             return WinnerState.tie
+
+        # rotate_start
+        if(self.rotate_start):
+            tmp = self.current
+            self.current = self.opponent
+            self.opponent = tmp
 
         return result
