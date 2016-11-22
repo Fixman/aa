@@ -21,7 +21,7 @@
 
 \interfootnotelinepenalty=10000
 
-\title{Aprendizaje Automático \\ Trabajo Práctico 2 --- 4 en ----}
+\title{Aprendizaje Automático \\ Trabajo Práctico 2 --- 4 en |}
 \author{Martín Fixman \and Leandro Matayoshi \and Fernando Gasperi}
 \date{Segundo Cuatrimestre de 2016}
 
@@ -62,12 +62,18 @@ El jugador Q Learning tiene varios parámetros que permiten ajustarlo:
     recompensas futuras.
   \item el valor inicial de los elementos $Q_{i, j}$.
 \end{itemize}
-Las experimentaciones que realizaremos preteden analizar cómo impactan éstos
+Las experimentaciones que realizaremos pretenden analizar cómo impactan estos
 parámetros en el aprendizaje del jugador. Además nos interesa ver el efecto de
-cuestiones como si sólo juega con un color (lo cual decide quién comienza las
-partidas) 
+cuestiones externas al algoritmo como si aprende jugando sólo con un color (lo
+cual decide quién comienza las partidas), con qué jugador aprende, etc.
+
+
 
 \section{Experimentación}
+
+\input{minimax.tex}
+
+\input{learning_rate.tex}
 
 \section{Conclusiones}
 
