@@ -13,6 +13,7 @@
 \usepackage{booktabs}
 \usepackage{hyperref}
 \usepackage{siunitx}
+\usepackage{float}
 
 \newcommand{\todox}{\(\mathit{\color{red}x}\)}
 \newcommand{\ham}{\large{\texttt{ham}}}
@@ -42,15 +43,18 @@ al aprendizaje las diferentes variables que podemos controlar.
 Modelamos el tablero y el 4 en línea de forma tal que fuera fácil simular juegos con distintos tipos de jugadores para
 realizar las pruebas. Programamos 3 jugadores:
 \begin{itemize}
-  \item Q Learning
+  \item QLearn
   \item Random
   \item Minimax
 \end{itemize}
-El jugador Minimax tiene un horizonte de 5 jugadas. Si no alcanza una posición final mirando 5 jugadas
-hacia adelante devuelve medio punto para el jugador que más cerca esté de alcanzar 4 en línea verticalmente.
-No se nos ocurrió una forma rápida de evaluar las posiciones del juego sin recorrer todo el tablero y calcular
-por fuerza bruta quién se encuentra a menos movimientos de conseguir 4 en línea. Considerar sólo las oportunidades
-verticales nos pareció una alternativa razonable entre el cálculo completo y la ausencia de evaluación.
+El jugador Minimax tiene un horizonte de 3 jugadas y utiliza el valor 1 para los
+estados ganadores, -1 para los perdedores y 0 para los de empate. Si no alcanza
+una posición final mirando 3 jugadas
+hacia adelante devuelve 0, el valor equivalente a un empate. Lo que podría hacer
+es evaluar la posición y devolver un valor que represente el resultado de la
+evaluación, es decir, cuál de los dos colores se encuentra en una posición
+favorable. Sin embargo, veremos más adelante que nuestros experimentos muestran a
+la evaluación innecesaria para este contexto.
 El jugador Q Learning tiene varios parámetros que permiten ajustarlo:
 \begin{itemize}
   \item $\epsilon$ es la probabilidad con la cual elige una acción al azar. En
@@ -67,14 +71,86 @@ parámetros en el aprendizaje del jugador. Además nos interesa ver el efecto de
 cuestiones externas al algoritmo como si aprende jugando sólo con un color (lo
 cual decide quién comienza las partidas), con qué jugador aprende, etc.
 
-
-
 \section{Experimentación}
+
+\subsection{Aprendizaje}
+
+En primera instancia nos interesa corroborar que nuestro jugador QLearn
+efectivamente aprenda y logre derrotar al jugador Random. Primero pusimos a
+jugar a dos jugadores Random para ver cuánto influía el hecho de que el rojo
+jugara primero y si los resultados eran parejos.
+
+\begin{figure}[H]
+	\centerline{\includegraphics[width=1.3\textwidth]{figures/random_vs_random.png}}
+	\caption{Random vs. Random}
+\end{figure}
+
+Jugar primero vemos que tiene una ventaja clara pero pequeña ya que la
+performance de ambos se encuentra a menos de $5\%$ del empate. Ahora veamos si
+QLearn puede vencer a Random. QLearn utilizará $\epsilon = 0.2$, $\alpha = 0.3$ y $\gamma = 0.9$.
+
+\begin{figure}[H]
+	\centerline{\includegraphics[width=1.3\textwidth]{figures/qlearn_vs_random.png}}
+	\caption{QLearn vs. Random}
+\end{figure}
+
+QLearn logra ganarle al Random jugando primero el $70\%$ de las veces. Se puede
+ver que también logra derrotar al Random jugando segundo.
+
+\begin{figure}[H]
+	\centerline{\includegraphics[width=1.3\textwidth]{figures/random_vs_qlearn.png}}
+	\caption{Random vs. QLearn}
+\end{figure}
+
+Esta última es una buena muestra del desempeño de QLearn ya que logra sobrepasar
+la desventaja que implica jugar segundo.
 
 \input{minimax.tex}
 
 \input{learning_rate.tex}
 
+\subsection{Parámetros de Q Learning}
+
+Realizamos algunos experimentos con los parámetros de Q Learning. El objetivo de
+analizar los parámetros es doble, por un lado ver cómo afectan la performance
+del algoritmo y por otro encontrar los valores óptimos. Los dos parámetros
+que variamos fueron $\gamma$ y $\epsilon$.
+
+\begin{figure}[H]
+	\centerline{\includegraphics[width=1.3\textwidth]{figures/gamma.png}}
+	\caption{Gamma}
+\end{figure}
+
+\begin{figure}[H]
+	\centerline{\includegraphics[width=1.3\textwidth]{figures/epsilon.png}}
+	\caption{Epsilon}
+\end{figure}
+
+Se puede apreciar que $\gamma$ parece no afectar considerablemente la performance
+aunque los valores superiores se encuentran favorecidos. Sin embargo, $\epsilon$
+muestra un impacto mayor, consiguiendo los mejores resultados con un $\epsilon =
+0.1$, el mínimo. No estamos seguros por qué un parámetro de exploración bajo
+puede favorecer al algoritmo, quizás dada la reducida cantidad de partidas de
+entrenamiento si se repiten posiciones que ya sabe ganar obtiene mejores
+resultados en un intervalo corto pero eso no se propague a entrenamientos más largos.
+
 \section{Conclusiones}
+
+El algoritmo de Q Learning funciona y pudimos ver claramente que aprende ya que
+consiguió vencer a otros jugadores. Queda un amplio espacio para seguir
+experimentando. Nos hubiera gustado analizar el impacto del resto de los
+parámetros: el valor inicial de los elementos $Q$, $\alpha$ e incluso las
+distintas combinaciones que surgen de ellos. No terminamos de entender por qué
+la tasa de efectividad de Q Learn no es monótona creciente, creemos que se puede
+deber a que el peso de los resultados del acumulado es demasiado y tendría más
+sentido tomar la tasa de efectividad de las últimas $n$ partidas en lugar del
+acumulado de todas. Otra posibilidad es que el entrenamiento que realizamos fue
+demasiado corto para que pueda seguir creciendo. Por último, nos hubiera gustado
+comparar el resultado del aprendizaje con distintos contrincantes de alguna otra
+forma, nos pareció que la tasa de efectividad como índice absoluto es pobre. Se
+nos ocurrió que si hiciéramos un entrenamiento suficientemente largo como para
+tener confianza en que la $Q$ obtenida se parece a la objetivo, podríamos haber
+comparado las $Q$ resultantes de los entrenamientos con cada contrincante
+distinto y graficar cómo progresaba la distancia a la $Q$ objetivo.
 
 \end{document}

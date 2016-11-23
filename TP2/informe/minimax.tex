@@ -1,24 +1,15 @@
-\subsection{Performance against Minimax}
+\subsection{QLearn vs. Minimax}
 
-Durante el TP se desarrolló una implementación de MinimaxPlayer que obtiene muy buenos resultados.
-Utiliza una ventana de 3 movimientos a futuro, premiando los escenarios ganadores con un valor de 1,
-castigando los escenarios perdedores con -1 y devolviendo 0 para los escenarios en donde la ventana alcanza
-un valor de 0 y ningún jugador ha ganado o perdido.
+El jugador Minimax fue testeado contra un jugador Random y lo derrotó
+fácilmente. Minimax considera todas las alternativas en cada paso por lo cual
+genera un árbol de búsqueda en promedio 20-ario, esto lo vuelve más lento que el
+resto de los jugadores. Las pruebas que realizamos con él las limitamos a un
+número de partidas $n < 1000$ porque demoraban demasiado.
 
-Dicha implementación fue testeada contra un jugador random alcanzando un niveles de efectividad muy altos.
-Debido a las características recursivas del algoritmo el algoritmo toma un tiempo no despreciable en ejecutarse,
-por lo que experimentamos hasta una cantidad de juegos N con un valor máximo de 100.000
-
-A continuación se incluye una tabla en donde mostramos la efectividad de un QLearn Player compitiendo contra
-un Minimax player para distinta cantidad de juegos N.
-
-Los parámetros del QLearn Player fueron fijados con los siguientes valores:
-$\epsilon$ = 0.2, $\alpha$ = 0.3, $\gamma$ = 0.9
-
-Los resultados están expresados en función de la cantidad de victorias del jugador QLearn sobre el total de partidos
-jugados
-
-~
+A continuación se incluye una tabla en donde mostramos la efectividad de QLearn contra
+Minimax incrementando la cantidad de juegos con los que cuenta QLearn para
+aprender. Esperamos que la efectividad de QLearn ($\epsilon$ = 0.2, $\alpha$ =
+0.3, $\gamma$ = 0.9) aumente con el correr de las partidas.
 
 \begin{center}
 \begin{tabular}{c c}
@@ -36,9 +27,15 @@ jugados
 \end{tabular}
 \end{center}
 
-~
-
 Según los resultados podemos concluir que la cantidad de partidos jugados no son suficientes como para que el
 algoritmo de QLearn desarrolle una política $\pi$ efectiva. Por el contrario, la ventana de valor 3
 le es suficiente al Minimax player para poder anticipar y dirigir sus movimientos a escenarios ganadores y poder
 evitar los perdedores.
+Estos resultados tienen sentido ya que Minimax podrá concretar todas las
+victorias que se puedan alcanzar desde un estado 3 o menos movimientos desde la
+primer partida y sobre todo porque es difícil ganarle. Se puede ver que Minimax
+siempre impedirá que su oponente gane a menos que no pueda evitarlo, es decir, a
+menos que el oponente logre llegar a un estado en el que tiene dos movimientos
+distintos ganadores. Elaborar una estrategia para llegar a dichos estados parece
+algo complejo a lo que QLearn asumimos que llegaría luego de un número de
+partidas que no tenemos tiempo para correr.
